@@ -15,6 +15,7 @@ from mario import Mario
 from owl import Owl
 from owl2 import Owl2
 from cloud import Cloud
+from button import Button
 
 pygame.init()
 
@@ -78,47 +79,6 @@ def init():
         number_rects.append((text, number_rect))
 
 
-class Button(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Button, self).__init__()
-        self.backcolor = WHITE
-        self.surf = pygame.Surface((75, 25))
-        self.surf.fill(self.backcolor)
-        self.rect = self.surf.get_rect()
-        self.rect.move_ip(200, 200)
-        self.mouseClicked = False
-        self.state = 'normal'
-
-    def set_backcolor(self, color):
-        self.backcolor = color
-        self.surf.fill(self.backcolor)
-
-    def set_init_pos(self, left, top):
-        self.rect.left = left
-        self.rect.top = top
-
-    def update_event(self, event, mouse):
-        self.mouseClicked = False
-
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            #print('mouse button down')
-            self.set_backcolor(BLUE)
-            self.mouseClicked = True
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            #print('mouse button up')
-            self.set_backcolor(WHITE)
-            self.mouseClicked = False
-
-        if self.rect.collidepoint(mouse) and self.mouseClicked:
-            self.state = 'clicked'
-        elif self.rect.collidepoint(mouse):
-            self.state = 'hover'
-            self.set_backcolor(GREEN)
-        else:
-            self.set_backcolor(WHITE)
-            self.state = 'normal'
-
-
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
@@ -173,11 +133,11 @@ pygame.time.set_timer(ADDCLOUD, 1000)
 
 clouds = pygame.sprite.Group()
 
-button_start = Button()
+button_start = Button(text='Старт')
 button_start.set_init_pos(100, 720)
-button_jump = Button()
+button_jump = Button(text='Прыжок')
 button_jump.set_init_pos(200, 720)
-button_stop = Button()
+button_stop = Button(text='Стоп')
 button_stop.set_init_pos(300, 720)
 
 all_sprites = pygame.sprite.Group()
@@ -237,14 +197,15 @@ while running:
     #if state == 'hover':
     #    pygame.draw.rect(screen, BUTTON_HOVER, button)
     if button_start.state == 'clicked':
+        mario.stop = False
         mario.rect.top = 0
         mario.rect.left = 0
 
     if button_jump.state == 'clicked':
+        mario.stop = False
         mario.rect.top -= 50
 
     if button_stop.state == 'clicked':
-        #pygame.time.wait(2000)
         if mario.stop:
             mario.stop = False
         else:
@@ -340,8 +301,11 @@ while running:
     #pygame.draw.rect(screen, WHITE, (20, 20, 100, 75))
     #pygame.draw.rect(screen, LIGHT_BLUE, r1, 8)
     screen.blit(button_start.surf, button_start.rect)
+    screen.blit(button_start.surf_text, button_start.rect_text)
     screen.blit(button_jump.surf, button_jump.rect)
+    screen.blit(button_jump.surf_text, button_jump.rect_text)
     screen.blit(button_stop.surf, button_stop.rect)
+    screen.blit(button_stop.surf_text, button_stop.rect_text)
 
     #pygame.draw.line(screen, WHITE, [10, 30], [290, 15], 3)
     #pygame.draw.line(screen, WHITE, [10, 50], [290, 35])
