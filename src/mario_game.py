@@ -51,7 +51,8 @@ r1 = pygame.Rect((200, 50, 100, 75))
 
 
 def init():
-    #number_rects = []
+    global number_rects
+    number_rects = []
     global screen_width
     global screen_height
     global line_step_width
@@ -205,7 +206,6 @@ while running:
             os.environ['SDL_VIDEO_WINDOW_POS'] = ''  # Clears the default window location
             width, height = event.dict['size']
             screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
-            number_rects = []
             init()
             mario.set_screen(screen)
 
