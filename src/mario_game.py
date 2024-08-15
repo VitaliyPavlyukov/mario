@@ -48,6 +48,7 @@ class MarioGame:
         self.line_step_height = 0
         self.backgrounds = []
         self.photo = None
+        self.sound_collision = None
 
     def default(self, screen):
         """ Базовые значения линейки """
@@ -117,7 +118,13 @@ class MarioGame:
                 pygame.image.load(image), (1600, 800)))
 
     def main(self):
+        pygame.mixer.pre_init(44100, -16, 1, 512)  # важно вызвать до pygame.init()
         pygame.init()
+        self.sound_collision = pygame.mixer.Sound("sounds/Collision.ogg")
+
+        pygame.mixer.music.load('sounds/track_09.mp3')
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.5)
 
         window_size = (1600, 800)
         pygame.display.set_caption("Марио")
@@ -231,6 +238,7 @@ class MarioGame:
                             statistic.cloud_count += 1
                             statistic.set_cloud(statistic.cloud_count)
                             mario.in_cloud = True
+                            self.sound_collision.play()
 
                         mario.rect.top -= 5
                         screen.blit(mario.my_image_6_1, mario.rect)
@@ -243,6 +251,7 @@ class MarioGame:
                         else:
                             mario.rect.top = mario.default_rect_top
                         screen.blit(mario.current_frame, mario.rect)
+                        self.sound_collision.stop()
 
                 elif mario.move_right:
                     mario_surf = pygame.transform.flip(mario.current_frame, True, False)
