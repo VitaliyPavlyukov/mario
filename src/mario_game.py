@@ -46,6 +46,8 @@ class MarioGame:
         self.screen_height = 0
         self.line_step_width = 0
         self.line_step_height = 0
+        self.backgrounds = []
+        self.photo = None
 
     def default(self, screen):
         """ Базовые значения линейки """
@@ -69,33 +71,66 @@ class MarioGame:
             number_rect.move_ip(5, self.line_step_height * i)
             self.number_rects.append((text, number_rect))
 
+    def load_photo(self):
+        """ Загрузка тестового фото """
+        self.photo = pygame.image.load("images\\DSC_2998.jpg")
+        self.photo = pygame.transform.scale(self.photo, (500, 300))
+
+    def draw_photo(self, screen):
+        """ Отрисовка тестового фото """
+        screen.blit(self.photo, (1, 450))
+
+    def draw_one_image(self, screen, frame_images):
+        """ Отрисовка тестовой картинки """
+        back_color = (147, 187, 236)
+        my_images_zero = pygame.transform.scale(frame_images[0], (75, 100))
+        my_images_zero.set_colorkey(back_color)
+        screen.blit(my_images_zero, (1, 450))
+
+    def draw_rect(self, screen):
+        """ Отрисовка тестовой области """
+        r1 = pygame.Rect((200, 50, 100, 75))
+        pygame.draw.rect(screen, WHITE, (20, 20, 100, 75))
+        pygame.draw.rect(screen, LIGHT_BLUE, r1, 8)
+
+    def draw_lines(self, screen):
+        """ Отрисовка тестовых линий """
+        pygame.draw.line(screen, WHITE, [10, 30], [290, 15], 3)
+        pygame.draw.line(screen, WHITE, [10, 50], [290, 35])
+        pygame.draw.aaline(screen, WHITE, [10, 70], [290, 55])
+
+        pygame.draw.lines(screen, WHITE, False,
+                          [[0, screen.get_height()], [300, 300], [500, 500], [600, 700]], 5)
+
+    def get_backgrounds(self):
+        """ Фон """
+        self.backgrounds = []
+        back_images = [
+            "images\\1700119323_pictures-pibig-info-p-multyashnaya-polyanka-pinterest-27.jpg",
+            "images\\1683363757_furman-top-p-fon-polyanka-instagram-27.jpg",
+            "images\\1684547321_polinka-top-p-multyashnaya-polyanka-kartinka-krasivo-35.jpg",
+            "images\\1678084637_bogatyr-club-p-ramka-gribi-foni-oboi-50.jpg"
+        ]
+
+        for image in back_images:
+            self.backgrounds.append(pygame.transform.scale(
+                pygame.image.load(image), (1600, 800)))
+
     def main(self):
         pygame.init()
 
         window_size = (1600, 800)
+        pygame.display.set_caption("Марио")
         screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
         color = (216, 233, 243)
         screen.fill(color)
-        #pygame.display.flip()
-        pygame.display.set_caption("Марио")
+
         clock = pygame.time.Clock()
 
-        r1 = pygame.Rect((200, 50, 100, 75))
-
+        # Загрузки объектов
         self.default(screen)
-        backgrounds = []
-        back_images = [
-        "images\\1700119323_pictures-pibig-info-p-multyashnaya-polyanka-pinterest-27.jpg",
-        "images\\1683363757_furman-top-p-fon-polyanka-instagram-27.jpg",
-        "images\\1684547321_polinka-top-p-multyashnaya-polyanka-kartinka-krasivo-35.jpg",
-        "images\\1678084637_bogatyr-club-p-ramka-gribi-foni-oboi-50.jpg"
-        ]
-        for image in back_images:
-            backgrounds.append(pygame.transform.scale(
-                pygame.image.load(image), (1600, 800)))
-
-        #photo = pygame.image.load("DSC_2998.jpg")
-        #photo = pygame.transform.scale(photo, (500, 300))
+        self.get_backgrounds()
+        self.load_photo()
 
         # Инициализация объектов
         ADDCLOUD = pygame.USEREVENT + 2
@@ -161,8 +196,6 @@ class MarioGame:
                     clouds.add(new_cloud)
                     all_sprites.add(new_cloud)
 
-            #if state == 'hover':
-            #    pygame.draw.rect(screen, BUTTON_HOVER, button)
             if button_start.state == 'clicked':
                 mario.stop = False
                 mario.rect.top = 0
@@ -178,28 +211,14 @@ class MarioGame:
                 else:
                     mario.stop = True
 
-                    # if state == 'hover':
-            #     pygame.draw.rect(screen, BUTTON_HOVER, button)
-            # elif state == 'clicked':
-            #     pygame.draw.rect(screen, BUTTON_CLICKED, button)
-            # else:
-            #     pygame.draw.rect(screen, BUTTON_NORMAL, button)
-
             clouds.update()
             mario.animate_state(clock)
             mario.update()
 
-            #mario_2.animate_state(clock)
-            #mario_2.update()
-
-            #screen.fill(color)
-
-            if mario.background_index > len(backgrounds) - 1:
+            if mario.background_index > len(self.backgrounds) - 1:
                 mario.background_index = 0
 
-            screen.blit(backgrounds[mario.background_index], (0, 0))
-
-            #screen.blit(photo, (0, 0))
+            screen.blit(self.backgrounds[mario.background_index], (0, 0))
 
             for entity in all_sprites:
                 screen.blit(entity.surf, entity.rect)
@@ -238,25 +257,6 @@ class MarioGame:
                 screen.blit(mario.surf, mario.rect)
 
             screen.blit(mario.stat_text, mario.stat_number_rect)
-            #screen.blit(mario.stat_text, (mario.rect.left, mario.rect.top - 30, 100, 100))
-
-
-            #back_color = (147, 187, 236)
-            #my_images_zero = pygame.transform.scale(frame_images[0], (75, 100))
-            #my_images_zero.set_colorkey(back_color)
-            #screen.blit(my_images_zero, (1, 450))
-
-            # screen.blit(owl.my_image_6_1, (1, 1))
-            # screen.blit(owl.frame_images[0], (200, 1))
-            # screen.blit(owl.frame_images[1], (200*2, 1))
-            # screen.blit(owl.frame_images[2], (200 * 3, 1))
-            # screen.blit(owl.frame_images[3], (200 * 4, 1))
-            #
-            # screen.blit(owl2.frame_images[0], (1, 1))
-            # screen.blit(owl2.frame_images[1], (200, 300))
-            # screen.blit(owl2.frame_images[2], (200 * 2, 300))
-            # screen.blit(owl2.frame_images[3], (200 * 3, 300))
-            # screen.blit(owl2.frame_images[4], (200 * 4, 300))
 
             owl2.animate_state(clock)
             owl2.update()
@@ -265,8 +265,6 @@ class MarioGame:
             screen.blit(statistic.surf, statistic.rect)
             screen.blit(statistic.text, statistic.place)
 
-            #pygame.draw.rect(screen, WHITE, (20, 20, 100, 75))
-            #pygame.draw.rect(screen, LIGHT_BLUE, r1, 8)
             screen.blit(button_start.surf, button_start.rect)
             screen.blit(button_start.surf_text, button_start.rect_text)
             screen.blit(button_jump.surf, button_jump.rect)
@@ -274,23 +272,25 @@ class MarioGame:
             screen.blit(button_stop.surf, button_stop.rect)
             screen.blit(button_stop.surf_text, button_stop.rect_text)
 
-            #pygame.draw.line(screen, WHITE, [10, 30], [290, 15], 3)
-            #pygame.draw.line(screen, WHITE, [10, 50], [290, 35])
-            #pygame.draw.aaline(screen, WHITE, [10, 70], [290, 55])
-
-            # pygame.draw.lines(screen, WHITE, False,
-            #                   [[0, screen.get_height()], [300, 300], [500, 500], [600, 700]], 5)
-
             for text, number_rect in self.number_rects:
                 screen.blit(text, number_rect)
 
             # for color, left, top in circles:
             #     pygame.draw.circle(screen, color, left, top)
 
+            # тестовые области
+            # self.draw_rect(screen)
+
+            # тестовые линии
+            # self.draw_lines(screen)
+
+            # тестовая картинка
+            # self.draw_one_image(screen, mario.frame_images)
+
+            # тестовое фото
+            # self.draw_photo(screen)
+
             pygame.display.flip()
-            #pygame.display.update(r1)
-            #r1.top += 200
-            #pygame.display.update(r1)
 
         pygame.quit()
 
