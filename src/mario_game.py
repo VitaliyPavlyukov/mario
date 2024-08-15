@@ -18,6 +18,7 @@ from cloud import Cloud
 from button import Button
 from player import Player
 from statistic import Statistic
+from book import Book
 
 
 WHITE = (255, 255, 255)
@@ -144,14 +145,6 @@ class MarioGame:
         pygame.time.set_timer(ADDCLOUD, 1000)
 
         clouds = pygame.sprite.Group()
-
-        button_start = Button(text='Старт')
-        button_start.set_init_pos(100, 720)
-        button_jump = Button(text='Прыжок')
-        button_jump.set_init_pos(200, 720)
-        button_stop = Button(text='Стоп')
-        button_stop.set_init_pos(300, 720)
-
         all_sprites = pygame.sprite.Group()
 
         player = Player()
@@ -159,7 +152,25 @@ class MarioGame:
         owl = Owl(screen)
         owl2 = Owl2(screen)
         statistic = Statistic()
+        book = Book()
+        book.set_page(0)
         circles = []
+
+        button_start = Button(text='Старт')
+        button_start.set_init_pos(100, 720)
+        button_jump = Button(text='Прыжок')
+        button_jump.set_init_pos(200, 720)
+        button_stop = Button(text='Стоп')
+        button_stop.set_init_pos(300, 720)
+        button_book_show = Button(text='Книга')
+        button_book_show.set_init_pos(400, 720)
+
+        button_right = Button(text='-->')
+        button_right.set_init_pos(300, 240)
+        button_left = Button(text='<--')
+        button_left.set_init_pos(200, 240)
+        button_book_exit = Button(text='X', width=25, height=25)
+        button_book_exit.set_init_pos(book.rect.right - button_book_exit.width - 1, book.rect.top + 1)
 
         # запускаем основной цикл
         running = True
@@ -181,10 +192,14 @@ class MarioGame:
                 button_start.update_event(event, mouse)
                 button_jump.update_event(event, mouse)
                 button_stop.update_event(event, mouse)
+                button_book_show.update_event(event, mouse)
+                button_book_exit.update_event(event, mouse)
+                button_left.update_event(event, mouse)
+                button_right.update_event(event, mouse)
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        mario.rect.top -= 150
+                        mario.rect.top -= 200
 
                         # if event.type == pygame.MOUSEBUTTONDOWN:
                 #     if event.button == 1:
@@ -207,16 +222,36 @@ class MarioGame:
                 mario.stop = False
                 mario.rect.top = 0
                 mario.rect.left = 0
+                button_start.state = 'normal'
 
             if button_jump.state == 'clicked':
                 mario.stop = False
-                mario.rect.top -= 50
+                mario.rect.top -= 200
+                button_jump.state = 'normal'
 
             if button_stop.state == 'clicked':
                 if mario.stop:
                     mario.stop = False
                 else:
                     mario.stop = True
+                button_stop.state = 'normal'
+
+            if button_book_show.state == 'clicked':
+                book.show = True
+                button_book_show.state = 'normal'
+
+            if button_book_exit.state == 'clicked':
+                book.show = False
+                button_book_exit.state = 'normal'
+
+            if button_right.state == 'clicked':
+                book.set_page(book.current_page_index + 1)
+                button_right.state = 'normal'
+
+            if button_left.state == 'clicked':
+                book.set_page(book.current_page_index - 1)
+                button_left.state = 'normal'
+
 
             clouds.update()
             mario.animate_state(clock)
@@ -280,6 +315,8 @@ class MarioGame:
             screen.blit(button_jump.surf_text, button_jump.rect_text)
             screen.blit(button_stop.surf, button_stop.rect)
             screen.blit(button_stop.surf_text, button_stop.rect_text)
+            screen.blit(button_book_show.surf, button_book_show.rect)
+            screen.blit(button_book_show.surf_text, button_book_show.rect_text)
 
             for text, number_rect in self.number_rects:
                 screen.blit(text, number_rect)
@@ -298,6 +335,19 @@ class MarioGame:
 
             # тестовое фото
             # self.draw_photo(screen)
+
+            if book.show:
+                screen.blit(book.surf, book.rect)
+                screen.blit(book.surf_text, book.rect_text)
+
+                screen.blit(button_right.surf, button_right.rect)
+                screen.blit(button_right.surf_text, button_right.rect_text)
+
+                screen.blit(button_left.surf, button_left.rect)
+                screen.blit(button_left.surf_text, button_left.rect_text)
+
+                screen.blit(button_book_exit.surf, button_book_exit.rect)
+                screen.blit(button_book_exit.surf_text, button_book_exit.rect_text)
 
             pygame.display.flip()
 
