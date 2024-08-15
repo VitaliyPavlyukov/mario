@@ -165,10 +165,12 @@ class MarioGame:
         button_book_show = Button(text='Книга')
         button_book_show.set_init_pos(400, 720)
 
-        button_right = Button(text='-->')
-        button_right.set_init_pos(300, 240)
-        button_left = Button(text='<--')
-        button_left.set_init_pos(200, 240)
+        button_book_right = Button(text='-->')
+        button_book_right.set_init_pos(book.rect.left + (book.width / 2), book.rect.top + book.height + 5)
+        button_book_page_num = Button(text='1', width=25, height=25)
+        button_book_page_num.set_init_pos(book.rect.left + (book.width / 2) - 25, book.rect.top + book.height + 5)
+        button_book_left = Button(text='<--')
+        button_book_left.set_init_pos(book.rect.left + (book.width / 2) - 100, book.rect.top + book.height + 5)
         button_book_exit = Button(text='X', width=25, height=25)
         button_book_exit.set_init_pos(book.rect.right - button_book_exit.width - 1, book.rect.top + 1)
 
@@ -194,8 +196,8 @@ class MarioGame:
                 button_stop.update_event(event, mouse)
                 button_book_show.update_event(event, mouse)
                 button_book_exit.update_event(event, mouse)
-                button_left.update_event(event, mouse)
-                button_right.update_event(event, mouse)
+                button_book_left.update_event(event, mouse)
+                button_book_right.update_event(event, mouse)
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
@@ -244,13 +246,15 @@ class MarioGame:
                 book.show = False
                 button_book_exit.state = 'normal'
 
-            if button_right.state == 'clicked':
+            if button_book_right.state == 'clicked':
                 book.set_page(book.current_page_index + 1)
-                button_right.state = 'normal'
+                button_book_right.state = 'normal'
+                button_book_page_num.set_text(str(book.current_page_index + 1))
 
-            if button_left.state == 'clicked':
+            if button_book_left.state == 'clicked':
                 book.set_page(book.current_page_index - 1)
-                button_left.state = 'normal'
+                button_book_left.state = 'normal'
+                button_book_page_num.set_text(str(book.current_page_index + 1))
 
 
             clouds.update()
@@ -338,13 +342,20 @@ class MarioGame:
 
             if book.show:
                 screen.blit(book.surf, book.rect)
-                screen.blit(book.surf_text, book.rect_text)
+                #screen.blit(book.surf_text, book.rect_text)
+                for i, line in enumerate(book.current_page.lines):
+                    font = pygame.font.Font(None, 24)
+                    surf_text = font.render(line, True, (0, 0, 0))
+                    screen.blit(surf_text, (book.rect.left + 50, book.rect.top + 100 + (50 * i)))
 
-                screen.blit(button_right.surf, button_right.rect)
-                screen.blit(button_right.surf_text, button_right.rect_text)
+                screen.blit(button_book_right.surf, button_book_right.rect)
+                screen.blit(button_book_right.surf_text, button_book_right.rect_text)
 
-                screen.blit(button_left.surf, button_left.rect)
-                screen.blit(button_left.surf_text, button_left.rect_text)
+                screen.blit(button_book_page_num.surf, button_book_page_num.rect)
+                screen.blit(button_book_page_num.surf_text, button_book_page_num.rect_text)
+
+                screen.blit(button_book_left.surf, button_book_left.rect)
+                screen.blit(button_book_left.surf_text, button_book_left.rect_text)
 
                 screen.blit(button_book_exit.surf, button_book_exit.rect)
                 screen.blit(button_book_exit.surf_text, button_book_exit.rect_text)

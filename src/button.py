@@ -43,6 +43,12 @@ class Button(pygame.sprite.Sprite):
         self.rect_text.left = self.rect.left + ((self.surf.get_width() - self.surf_text.get_width()) // 2)
         self.rect_text.top = self.rect.top + ((self.surf.get_height() - self.surf_text.get_height()) // 2)
 
+    def set_text(self, text):
+        self.text = text
+        self.surf_text = self.font.render(self.text, True, Button.color_BLACK)
+        self.rect_text = self.surf_text.get_rect()
+        self.set_init_pos(self.rect.left, self.rect.top)
+
     def update_event(self, event, mouse):
         self.mouseClicked = False
 
@@ -54,7 +60,6 @@ class Button(pygame.sprite.Sprite):
                 # mouse button up
                 self.set_backcolor(Button.color_WHITE)
                 self.mouseClicked = True
-                print('MOUSEBUTTONUP')
 
         if self.rect.collidepoint(mouse) and self.mouseClicked:
             self.state = 'clicked'
