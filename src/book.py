@@ -22,18 +22,21 @@ class Page:
                         continue
 
             for word in paragraph.split(' '):
-                if len(line) > 40:
+                if len(line) > 37:
                     lines.append(line.strip())
                     line = word
                 else:
                     line = line + ' ' + word + ' '
+
+        if len(line) > 0:
+            lines.append(line.strip())
 
         return lines
 
 
 class Book(pygame.sprite.Sprite):
     """ Книга """
-    def __init__(self, width=500, height=600):
+    def __init__(self, width=520, height=600):
         super(Book, self).__init__()
         self.width = width
         self.height = height
@@ -67,9 +70,11 @@ class Book(pygame.sprite.Sprite):
         page_index = 0
         line_step = 0
         lines = []
+        prev_line = ''
         for line in all_page.text_format(all_page.text):
+            prev_line = line
 
-            if len(line) == 0:
+            if len(line) == 0 and len(prev_line) == 0:
                 continue
 
             line_step += 1
@@ -81,6 +86,11 @@ class Book(pygame.sprite.Sprite):
                 self.pages.append(page)
                 line_step = 0
                 lines = []
+
+        if len(lines) > 0:
+            page = Page('')
+            page.lines = lines
+            self.pages.append(page)
 
     def set_page(self, value):
         if value > len(self.pages) - 1:
