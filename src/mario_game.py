@@ -133,7 +133,7 @@ class MarioGame:
                     os.environ['SDL_VIDEO_WINDOW_POS'] = ''  # Clears the default window location
                     width, height = event.dict['size']
                     screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
-                    init(screen)
+                    self.default(screen)
                     mario.set_screen(screen)
 
                 button_start.update_event(event, mouse)
