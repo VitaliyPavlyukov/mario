@@ -1,2 +1,2 @@
-c:\users\vital\anaconda3\python.exe mario_game.py
+c:\users\%username%\anaconda3\python.exe mario_game.py
 pause
