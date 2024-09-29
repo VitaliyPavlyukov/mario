@@ -5,10 +5,7 @@
 - [Приключения Марио. Глава 1. Грибное Королевство](https://proza.ru/2013/06/17/1053?ysclid=lzvcgzuzst571387686)
 
 ### Git
-`git add --all
-`git commit -m "add functions"
-`git push
-
+https://github.com/VitaliyPavlyukov/mario
 
 ![Скрин](screen.png)
 ![Скрин](screen2.png)
