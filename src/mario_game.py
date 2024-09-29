@@ -41,7 +41,10 @@ BUTTON_CLICKED = (100, 100, 255)
 class MarioGame:
     """ Game """
 
-    def __init__(self):
+    def __init__(self, screen):
+        self.running = False
+        self.screen = screen
+
         self.number_rects = []
         self.screen_width = 0
         self.screen_height = 0
@@ -50,6 +53,71 @@ class MarioGame:
         self.backgrounds = []
         self.photo = None
         self.sound_collision = None
+
+        # pygame.mixer.pre_init(44100, -16, 1, 512)  # важно вызвать до pygame.init()
+        # pygame.init()
+        self.sound_collision = pygame.mixer.Sound("sounds/Collision.ogg")
+
+        self.window_size = (1600, 800)
+        pygame.display.set_caption("Марио")
+        self.screen = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
+        color = (216, 233, 243)
+        self.screen.fill(color)
+
+        self.clock = pygame.time.Clock()
+
+        # Загрузки объектов
+        self.default(self.screen)
+        self.get_backgrounds()
+        self.load_photo()
+
+        # Инициализация объектов
+        self.ADDCLOUD = pygame.USEREVENT + 2
+        pygame.time.set_timer(self.ADDCLOUD, 1000)
+
+        self.clouds = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.Group()
+
+        self.player = Player()
+        self.mario = Mario(self.screen)
+        self.owl = Owl(self.screen)
+        self.owl2 = Owl2(self.screen)
+        self.statistic = Statistic()
+        self.book = Book()
+        self.book.set_page(0)
+        self.circles = []
+
+        self.button_start = Button(text='Старт')
+        self.button_start.set_init_pos(100, 720)
+        self.button_jump = Button(text='Прыжок')
+        self.button_jump.set_init_pos(200, 720)
+        self.button_stop = Button(text='Стоп')
+        self.button_stop.set_init_pos(300, 720)
+        self.button_book_show = Button(text='Книга')
+        self.button_book_show.set_init_pos(400, 720)
+
+        self.button_book_right = Button(text='-->')
+        self.button_book_right.set_init_pos(self.book.rect.left + (self.book.width / 2),
+                                            self.book.rect.top + self.book.height + 5)
+        self.button_book_page_num = Button(text='1', width=25, height=25)
+        self.button_book_page_num.set_init_pos(self.book.rect.left + (self.book.width / 2) - 25,
+                                               self.book.rect.top + self.book.height + 5)
+        self.button_book_left = Button(text='<--')
+        self.button_book_left.set_init_pos(self.book.rect.left + (self.book.width / 2) - 100,
+                                           self.book.rect.top + self.book.height + 5)
+        self.button_book_exit = Button(text='X', width=25, height=25)
+        self.button_book_exit.set_init_pos(self.book.rect.right - self.button_book_exit.width - 1,
+                                           self.book.rect.top + 1)
+
+    def set_running(self, value):
+        self.running = value
+
+        if self.running:
+            pygame.mixer.music.load('sounds/track_09.mp3')
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.5)
+        else:
+            pygame.mixer.music.stop()
 
     def default(self, screen):
         """ Базовые значения линейки """
@@ -118,253 +186,229 @@ class MarioGame:
             self.backgrounds.append(pygame.transform.scale(
                 pygame.image.load(image), (1600, 800)))
 
-    def main(self):
-        pygame.mixer.pre_init(44100, -16, 1, 512)  # важно вызвать до pygame.init()
-        pygame.init()
-        self.sound_collision = pygame.mixer.Sound("sounds/Collision.ogg")
+    def run(self, events):
 
-        pygame.mixer.music.load('sounds/track_09.mp3')
-        pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.5)
+        if not self.running:
+            return
 
-        window_size = (1600, 800)
-        pygame.display.set_caption("Марио")
-        screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
-        color = (216, 233, 243)
-        screen.fill(color)
+        mouse = pygame.mouse.get_pos()
 
-        clock = pygame.time.Clock()
+        for event in events:
 
-        # Загрузки объектов
-        self.default(screen)
-        self.get_backgrounds()
-        self.load_photo()
+            if event.type == pygame.QUIT:
+                self.set_running(False)
 
-        # Инициализация объектов
-        ADDCLOUD = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDCLOUD, 1000)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.set_running(False)
 
-        clouds = pygame.sprite.Group()
-        all_sprites = pygame.sprite.Group()
+            if event.type == pygame.VIDEORESIZE:
+                os.environ['SDL_VIDEO_WINDOW_POS'] = ''  # Clears the default window location
+                width, height = event.dict['size']
+                self.screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
+                self.default(self.screen)
+                self.mario.set_screen(self.screen)
 
-        player = Player()
-        mario = Mario(screen)
-        owl = Owl(screen)
-        owl2 = Owl2(screen)
-        statistic = Statistic()
-        book = Book()
-        book.set_page(0)
-        circles = []
+            self.button_start.update_event(event, mouse)
+            self.button_jump.update_event(event, mouse)
+            self.button_stop.update_event(event, mouse)
+            self.button_book_show.update_event(event, mouse)
+            self.button_book_exit.update_event(event, mouse)
+            self.button_book_left.update_event(event, mouse)
+            self.button_book_right.update_event(event, mouse)
 
-        button_start = Button(text='Старт')
-        button_start.set_init_pos(100, 720)
-        button_jump = Button(text='Прыжок')
-        button_jump.set_init_pos(200, 720)
-        button_stop = Button(text='Стоп')
-        button_stop.set_init_pos(300, 720)
-        button_book_show = Button(text='Книга')
-        button_book_show.set_init_pos(400, 720)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.mario.rect.top -= 200
 
-        button_book_right = Button(text='-->')
-        button_book_right.set_init_pos(book.rect.left + (book.width / 2), book.rect.top + book.height + 5)
-        button_book_page_num = Button(text='1', width=25, height=25)
-        button_book_page_num.set_init_pos(book.rect.left + (book.width / 2) - 25, book.rect.top + book.height + 5)
-        button_book_left = Button(text='<--')
-        button_book_left.set_init_pos(book.rect.left + (book.width / 2) - 100, book.rect.top + book.height + 5)
-        button_book_exit = Button(text='X', width=25, height=25)
-        button_book_exit.set_init_pos(book.rect.right - button_book_exit.width - 1, book.rect.top + 1)
+                    # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     if event.button == 1:
+            #         circles.append((RED, event.pos, 20))
+            #     elif event.button == 3:
+            #         pygame.draw.circle(screen, BLUE, event.pos, 20)
+            #         pygame.draw.rect(screen, GREEN,
+            #                      (event.pos[0] - 10,
+            #                       event.pos[1] - 10, 20, 20))
+            #         pygame.display.update()
+            #     elif event.button == 2:
+            #         screen.fill(WHITE)
 
-        # запускаем основной цикл
-        running = True
-        while running:
-            mouse = pygame.mouse.get_pos()
+            if event.type == self.ADDCLOUD:
+                new_cloud = Cloud(self.screen)
+                self.clouds.add(new_cloud)
+                self.all_sprites.add(new_cloud)
 
-            for event in pygame.event.get():
+        if self.button_start.state == 'clicked':
+            self.mario.stop = False
+            self.mario.rect.top = 0
+            self.mario.rect.left = 0
+            self.button_start.state = 'normal'
 
-                if event.type == pygame.QUIT:
+        if self.button_jump.state == 'clicked':
+            self.mario.stop = False
+            self.mario.rect.top -= 200
+            self.button_jump.state = 'normal'
+
+        if self.button_stop.state == 'clicked':
+            if self.mario.stop:
+                self.mario.stop = False
+            else:
+                self.mario.stop = True
+            self.button_stop.state = 'normal'
+
+        if self.button_book_show.state == 'clicked':
+            self.book.show = True
+            self.button_book_show.state = 'normal'
+
+        if self.button_book_exit.state == 'clicked':
+            self.book.show = False
+            self.button_book_exit.state = 'normal'
+
+        if self.button_book_right.state == 'clicked':
+            self.book.set_page(self.book.current_page_index + 1)
+            self.button_book_right.state = 'normal'
+            self.button_book_page_num.set_text(str(self.book.current_page_index + 1))
+
+        if self.button_book_left.state == 'clicked':
+            self.book.set_page(self.book.current_page_index - 1)
+            self.button_book_left.state = 'normal'
+            self.button_book_page_num.set_text(str(self.book.current_page_index + 1))
+
+        self.clouds.update()
+        self.mario.animate_state(self.clock)
+        self.mario.update()
+
+        if self.mario.background_index > len(self.backgrounds) - 1:
+            self.mario.background_index = 0
+
+        self.screen.blit(self.backgrounds[self.mario.background_index], (0, 0))
+
+        for entity in self.all_sprites:
+            self.screen.blit(entity.surf, entity.rect)
+
+        # выводим кадры, обновляем экран
+        if not self.mario.stop:
+            if self.mario.move_left:
+                if pygame.sprite.spritecollideany(self.mario, self.clouds):
+                    if not self.mario.in_cloud:
+                        self.statistic.cloud_count += 1
+                        self.statistic.set_cloud(self.statistic.cloud_count)
+                        self.mario.in_cloud = True
+                        self.sound_collision.play()
+
+                    self.mario.rect.top -= 5
+                    self.screen.blit(self.mario.my_image_6_1, self.mario.rect)
+                else:
+                    if self.mario.rect.top == self.mario.default_rect_top:
+                        self.mario.in_cloud = False
+
+                    if self.mario.rect.top < self.mario.default_rect_top:
+                        self.mario.rect.top += 5
+                    else:
+                        self.mario.rect.top = self.mario.default_rect_top
+                    self.screen.blit(self.mario.current_frame, self.mario.rect)
+                    self.sound_collision.stop()
+
+            elif self.mario.move_right:
+                self.mario_surf = pygame.transform.flip(self.mario.current_frame, True, False)
+                back_color = (147, 187, 236)
+                self.mario_surf.set_colorkey(back_color)
+
+                if pygame.sprite.spritecollideany(self.mario, self.clouds):
+                    self.screen.blit(self.mario.my_image_6_1, self.mario.rect)
+                else:
+                    self.screen.blit(self.mario_surf, self.mario.rect)
+        else:
+            self.screen.blit(self.mario.surf, self.mario.rect)
+
+        self.screen.blit(self.mario.stat_text, self.mario.stat_number_rect)
+
+        self.owl2.animate_state(self.clock)
+        self.owl2.update()
+        self.screen.blit(self.owl2.current_frame, self.owl2.rect)
+
+        self.screen.blit(self.statistic.surf, self.statistic.rect)
+        self.screen.blit(self.statistic.text, self.statistic.place)
+
+        self.screen.blit(self.button_start.surf, self.button_start.rect)
+        self.screen.blit(self.button_start.surf_text, self.button_start.rect_text)
+        self.screen.blit(self.button_jump.surf, self.button_jump.rect)
+        self.screen.blit(self.button_jump.surf_text, self.button_jump.rect_text)
+        self.screen.blit(self.button_stop.surf, self.button_stop.rect)
+        self.screen.blit(self.button_stop.surf_text, self.button_stop.rect_text)
+        self.screen.blit(self.button_book_show.surf, self.button_book_show.rect)
+        self.screen.blit(self.button_book_show.surf_text, self.button_book_show.rect_text)
+
+        for text, number_rect in self.number_rects:
+            self.screen.blit(text, number_rect)
+
+        # for color, left, top in circles:
+        #     pygame.draw.circle(screen, color, left, top)
+
+        # тестовые области
+        # self.draw_rect(screen)
+
+        # тестовые линии
+        # self.draw_lines(screen)
+
+        # тестовая картинка
+        # self.draw_one_image(screen, mario.frame_images)
+
+        # тестовое фото
+        # self.draw_photo(screen)
+
+        if self.book.show:
+            self.screen.blit(self.book.surf, self.book.rect)
+            # self.screen.blit(book.surf_text, book.rect_text)
+            for i, line in enumerate(self.book.current_page.lines):
+                font = pygame.font.Font(None, 24)
+                surf_text = font.render(line, True, (0, 0, 0))
+                self.screen.blit(surf_text, (self.book.rect.left + 50, self.book.rect.top + 100 + (50 * i)))
+
+            self.screen.blit(self.button_book_right.surf, self.button_book_right.rect)
+            self.screen.blit(self.button_book_right.surf_text, self.button_book_right.rect_text)
+
+            self.screen.blit(self.button_book_page_num.surf, self.button_book_page_num.rect)
+            self.screen.blit(self.button_book_page_num.surf_text, self.button_book_page_num.rect_text)
+
+            self.screen.blit(self.button_book_left.surf, self.button_book_left.rect)
+            self.screen.blit(self.button_book_left.surf_text, self.button_book_left.rect_text)
+
+            self.screen.blit(self.button_book_exit.surf, self.button_book_exit.rect)
+            self.screen.blit(self.button_book_exit.surf_text, self.button_book_exit.rect_text)
+
+        #pygame.display.flip()
+
+        #pygame.quit()
+
+
+def main():
+    pygame.mixer.pre_init(44100, -16, 1, 512)  # важно вызвать до pygame.init()
+    pygame.init()
+    window_size = (1600, 800)
+    screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
+    game = MarioGame(screen)
+    game.set_running(True)
+
+    running = True
+    while running:
+        events = pygame.event.get()
+
+        for event in events:
+
+            if event.type == pygame.QUIT:
+                running = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     running = False
 
-                if event.type == pygame.VIDEORESIZE:
-                    os.environ['SDL_VIDEO_WINDOW_POS'] = ''  # Clears the default window location
-                    width, height = event.dict['size']
-                    screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
-                    self.default(screen)
-                    mario.set_screen(screen)
+        game.run(events)
 
-                button_start.update_event(event, mouse)
-                button_jump.update_event(event, mouse)
-                button_stop.update_event(event, mouse)
-                button_book_show.update_event(event, mouse)
-                button_book_exit.update_event(event, mouse)
-                button_book_left.update_event(event, mouse)
-                button_book_right.update_event(event, mouse)
+        pygame.display.flip()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        mario.rect.top -= 200
-
-                        # if event.type == pygame.MOUSEBUTTONDOWN:
-                #     if event.button == 1:
-                #         circles.append((RED, event.pos, 20))
-                #     elif event.button == 3:
-                #         pygame.draw.circle(screen, BLUE, event.pos, 20)
-                #         pygame.draw.rect(screen, GREEN,
-                #                      (event.pos[0] - 10,
-                #                       event.pos[1] - 10, 20, 20))
-                #         pygame.display.update()
-                #     elif event.button == 2:
-                #         screen.fill(WHITE)
-
-                if event.type == ADDCLOUD:
-                    new_cloud = Cloud(screen)
-                    clouds.add(new_cloud)
-                    all_sprites.add(new_cloud)
-
-            if button_start.state == 'clicked':
-                mario.stop = False
-                mario.rect.top = 0
-                mario.rect.left = 0
-                button_start.state = 'normal'
-
-            if button_jump.state == 'clicked':
-                mario.stop = False
-                mario.rect.top -= 200
-                button_jump.state = 'normal'
-
-            if button_stop.state == 'clicked':
-                if mario.stop:
-                    mario.stop = False
-                else:
-                    mario.stop = True
-                button_stop.state = 'normal'
-
-            if button_book_show.state == 'clicked':
-                book.show = True
-                button_book_show.state = 'normal'
-
-            if button_book_exit.state == 'clicked':
-                book.show = False
-                button_book_exit.state = 'normal'
-
-            if button_book_right.state == 'clicked':
-                book.set_page(book.current_page_index + 1)
-                button_book_right.state = 'normal'
-                button_book_page_num.set_text(str(book.current_page_index + 1))
-
-            if button_book_left.state == 'clicked':
-                book.set_page(book.current_page_index - 1)
-                button_book_left.state = 'normal'
-                button_book_page_num.set_text(str(book.current_page_index + 1))
-
-
-            clouds.update()
-            mario.animate_state(clock)
-            mario.update()
-
-            if mario.background_index > len(self.backgrounds) - 1:
-                mario.background_index = 0
-
-            screen.blit(self.backgrounds[mario.background_index], (0, 0))
-
-            for entity in all_sprites:
-                screen.blit(entity.surf, entity.rect)
-
-            # выводим кадры, обновляем экран
-            if not mario.stop:
-                if mario.move_left:
-                    if pygame.sprite.spritecollideany(mario, clouds):
-                        if not mario.in_cloud:
-                            statistic.cloud_count += 1
-                            statistic.set_cloud(statistic.cloud_count)
-                            mario.in_cloud = True
-                            self.sound_collision.play()
-
-                        mario.rect.top -= 5
-                        screen.blit(mario.my_image_6_1, mario.rect)
-                    else:
-                        if mario.rect.top == mario.default_rect_top:
-                            mario.in_cloud = False
-
-                        if mario.rect.top < mario.default_rect_top:
-                            mario.rect.top += 5
-                        else:
-                            mario.rect.top = mario.default_rect_top
-                        screen.blit(mario.current_frame, mario.rect)
-                        self.sound_collision.stop()
-
-                elif mario.move_right:
-                    mario_surf = pygame.transform.flip(mario.current_frame, True, False)
-                    back_color = (147, 187, 236)
-                    mario_surf.set_colorkey(back_color)
-
-                    if pygame.sprite.spritecollideany(mario, clouds):
-                        screen.blit(mario.my_image_6_1, mario.rect)
-                    else:
-                        screen.blit(mario_surf, mario.rect)
-            else:
-                screen.blit(mario.surf, mario.rect)
-
-            screen.blit(mario.stat_text, mario.stat_number_rect)
-
-            owl2.animate_state(clock)
-            owl2.update()
-            screen.blit(owl2.current_frame, owl2.rect)
-
-            screen.blit(statistic.surf, statistic.rect)
-            screen.blit(statistic.text, statistic.place)
-
-            screen.blit(button_start.surf, button_start.rect)
-            screen.blit(button_start.surf_text, button_start.rect_text)
-            screen.blit(button_jump.surf, button_jump.rect)
-            screen.blit(button_jump.surf_text, button_jump.rect_text)
-            screen.blit(button_stop.surf, button_stop.rect)
-            screen.blit(button_stop.surf_text, button_stop.rect_text)
-            screen.blit(button_book_show.surf, button_book_show.rect)
-            screen.blit(button_book_show.surf_text, button_book_show.rect_text)
-
-            for text, number_rect in self.number_rects:
-                screen.blit(text, number_rect)
-
-            # for color, left, top in circles:
-            #     pygame.draw.circle(screen, color, left, top)
-
-            # тестовые области
-            # self.draw_rect(screen)
-
-            # тестовые линии
-            # self.draw_lines(screen)
-
-            # тестовая картинка
-            # self.draw_one_image(screen, mario.frame_images)
-
-            # тестовое фото
-            # self.draw_photo(screen)
-
-            if book.show:
-                screen.blit(book.surf, book.rect)
-                #screen.blit(book.surf_text, book.rect_text)
-                for i, line in enumerate(book.current_page.lines):
-                    font = pygame.font.Font(None, 24)
-                    surf_text = font.render(line, True, (0, 0, 0))
-                    screen.blit(surf_text, (book.rect.left + 50, book.rect.top + 100 + (50 * i)))
-
-                screen.blit(button_book_right.surf, button_book_right.rect)
-                screen.blit(button_book_right.surf_text, button_book_right.rect_text)
-
-                screen.blit(button_book_page_num.surf, button_book_page_num.rect)
-                screen.blit(button_book_page_num.surf_text, button_book_page_num.rect_text)
-
-                screen.blit(button_book_left.surf, button_book_left.rect)
-                screen.blit(button_book_left.surf_text, button_book_left.rect_text)
-
-                screen.blit(button_book_exit.surf, button_book_exit.rect)
-                screen.blit(button_book_exit.surf_text, button_book_exit.rect_text)
-
-            pygame.display.flip()
-
-        pygame.quit()
+    pygame.quit()
 
 
 if __name__ == '__main__':
-    game = MarioGame()
-    game.main()
+    main()
