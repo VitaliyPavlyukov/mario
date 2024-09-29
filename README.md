@@ -7,7 +7,7 @@
 ### Git
 https://github.com/VitaliyPavlyukov/mario
 
-![Скрин](screen0.png)
-![Скрин](screen.png)
-![Скрин](screen2.png)
-![Скрин](screen3.png)
+![Скрин](images\screen0.png)
+![Скрин](images\screen.png)
+![Скрин](images\screen2.png)
+![Скрин](images\screen3.png)
