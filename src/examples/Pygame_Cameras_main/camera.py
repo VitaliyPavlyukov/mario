@@ -1,19 +1,21 @@
-import pygame, sys
+import pygame
+import sys
+import os
 from random import randint
 
 
 class Tree(pygame.sprite.Sprite):
-	def __init__(self,pos,group):
+	def __init__(self, pos, group, base_path=''):
 		super().__init__(group)
-		self.image = pygame.image.load('graphics/tree.png').convert_alpha()
+		self.image = pygame.image.load(os.path.join(base_path, 'graphics/tree.png')).convert_alpha()
 		self.rect = self.image.get_rect(topleft=pos)
 
 
 class Player(pygame.sprite.Sprite):
-	def __init__(self,pos,group):
+	def __init__(self, pos, group, base_path=''):
 		super().__init__(group)
-		self.image = pygame.image.load('graphics/player.png').convert_alpha()
-		self.rect = self.image.get_rect(center = pos)
+		self.image = pygame.image.load(os.path.join(base_path, 'graphics/player.png')).convert_alpha()
+		self.rect = self.image.get_rect(center=pos)
 		self.direction = pygame.math.Vector2()
 		self.speed = 5
 
@@ -38,8 +40,9 @@ class Player(pygame.sprite.Sprite):
 		self.input()
 		self.rect.center += self.direction * self.speed
 
+
 class CameraGroup(pygame.sprite.Group):
-	def __init__(self):
+	def __init__(self, base_path=''):
 		super().__init__()
 		self.display_surface = pygame.display.get_surface()
 
@@ -57,7 +60,7 @@ class CameraGroup(pygame.sprite.Group):
 		self.camera_rect = pygame.Rect(l,t,w,h)
 
 		# ground
-		self.ground_surf = pygame.image.load('graphics/ground.png').convert_alpha()
+		self.ground_surf = pygame.image.load(os.path.join(base_path, 'graphics/ground.png')).convert_alpha()
 		self.ground_rect = self.ground_surf.get_rect(topleft = (0,0))
 
 		# camera speed
@@ -173,6 +176,56 @@ class CameraGroup(pygame.sprite.Group):
 		scaled_rect = scaled_surf.get_rect(center = (self.half_w,self.half_h))
 
 		self.display_surface.blit(scaled_surf,scaled_rect)
+
+
+class CameraGame:
+	def __init__(self, screen, base_path):
+		self.running = False
+		self.screen = screen
+		self.base_path = base_path
+
+		self.clock = pygame.time.Clock()
+
+		# setup
+		self.camera_group = CameraGroup(base_path=self.base_path)
+		self.player = Player((640, 360), self.camera_group, base_path=self.base_path)
+
+		for i in range(20):
+			random_x = randint(1000, 2000)
+			random_y = randint(1000, 2000)
+			Tree((random_x, random_y), self.camera_group, base_path=self.base_path)
+
+	def set_running(self, value):
+		self.running = value
+
+		if self.running:
+			pygame.event.set_grab(True)
+		else:
+			pygame.event.set_grab(False)
+
+	def run(self, events):
+		if not self.running:
+			return
+
+		for event in events:
+
+			if event.type == pygame.QUIT:
+				self.set_running(False)
+
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					self.set_running(False)
+
+			if event.type == pygame.MOUSEWHEEL:
+				self.camera_group.zoom_scale += event.y * 0.03
+
+		self.screen.fill('#71ddee')
+
+		self.camera_group.update()
+		self.camera_group.custom_draw(self.player)
+
+		pygame.display.update()
+		self.clock.tick(60)
 
 
 def main():
