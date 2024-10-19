@@ -55,8 +55,20 @@ class Game:
         while running:
 
             mouse = pygame.mouse.get_pos()
-
             events = pygame.event.get()
+
+            for event in events:
+
+                if event.type == pygame.QUIT:
+                    running = False
+
+                if not self.marioGame_running_flag and not self.сamera_game.running:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            running = False
+
+                self.button_mario_start.update_event(event, mouse)
+                self.button_camera_start.update_event(event, mouse)
 
             if self.mario_game.running:
                 self.mario_game.run(events)
@@ -73,18 +85,6 @@ class Game:
                 if self.сamera_game_running_flag:
                     self.screen.fill(self.screen_color)
                 self.сamera_game_running_flag = False
-
-            for event in events:
-
-                if event.type == pygame.QUIT:
-                    running = False
-
-                #if event.type == pygame.KEYDOWN:
-                #    if event.key == pygame.K_ESCAPE:
-                #        running = False
-
-                self.button_mario_start.update_event(event, mouse)
-                self.button_camera_start.update_event(event, mouse)
 
             if self.button_mario_start.state == 'clicked':
                 self.mario_game.set_running(True)
