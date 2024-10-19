@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
 		self.image = pygame.image.load(os.path.join(base_path, 'graphics/player.png')).convert_alpha()
 		self.rect = self.image.get_rect(center=pos)
 		self.direction = pygame.math.Vector2()
-		self.speed = 5
+		self.speed = 20  # default 5
 
 	def input(self):
 		keys = pygame.key.get_pressed()
@@ -260,9 +260,17 @@ class CameraGame:
 		self.camera_group.update()
 		self.camera_group.custom_draw(self.player, self.tree_list)
 
+		# Панель управления
+		# self.display_surface.blit(scaled_surf, scaled_rect)
+		BLACK = (0, 0, 0)
+		panel_surf = pygame.Surface((400, 800))
+		pygame.draw.rect(panel_surf, BLACK,
+						 pygame.Rect(0, 0, 400, 800))
+
 		# Статистика
 		stats = [
 				('Статистика', ''),
+				('player.rect', self.player.rect),
 				('camera_group.offset', self.camera_group.offset),
 				('camera_group.camera_rect', self.camera_group.camera_rect),
 				('test_stat', self.camera_group.test_stat),
@@ -276,8 +284,13 @@ class CameraGame:
 				]
 		for i, line in enumerate(stats):
 			font = pygame.font.Font(None, 24)
-			surf_text = font.render(str(line[0]) + ': ' + str(line[1]), True, (0, 0, 0))
-			self.screen.blit(surf_text, (100, 200 + (i*30)))
+			surf_text = font.render(str(line[0]) + ': ' + str(line[1]), True, (255, 255, 255))
+			panel_surf.blit(surf_text, (10, 300 + (i*30)))
+
+		scaled_surf = pygame.transform.scale(self.camera_group.internal_surf, self.camera_group.internal_surface_size_vector * 0.1)
+		panel_surf.blit(scaled_surf, (0, 0))
+
+		self.screen.blit(panel_surf, (0, 0))
 
 		#pygame.display.update()
 		self.clock.tick(60)
