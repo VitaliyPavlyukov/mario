@@ -9,6 +9,8 @@ class Tree(pygame.sprite.Sprite):
 		super().__init__(group)
 		self.image = pygame.image.load(os.path.join(base_path, 'graphics/tree.png')).convert_alpha()
 		self.rect = self.image.get_rect(topleft=pos)
+		self.name = 'Дерево'
+		self.size = 1
 
 
 class Player(pygame.sprite.Sprite):
@@ -47,6 +49,10 @@ class CameraGroup(pygame.sprite.Group):
 		self.display_surface = pygame.display.get_surface()
 
 		self.test_stat = None
+		self.test_ground_offset = None
+		self.test_tree = None
+		self.test_scaled_tree_rect = None
+		self.test_tree_selected_index = None
 
 		# camera offset 
 		self.offset = pygame.math.Vector2()
@@ -157,7 +163,7 @@ class CameraGroup(pygame.sprite.Group):
 		if keys[pygame.K_e]:
 			self.zoom_scale -= 0.1
 
-	def custom_draw(self, player):
+	def custom_draw(self, player, tree_list):
 		
 		# self.center_target_camera(player)
 		# self.box_target_camera(player)
@@ -165,10 +171,30 @@ class CameraGroup(pygame.sprite.Group):
 		self.mouse_control()
 		self.zoom_keyboard_control()
 
+		# Взаимодействие с деревьями
+		self.test_tree = None
+		pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+		for i, tree in enumerate(tree_list):
+			if tree.rect.collidepoint((player.rect.x, player.rect.y)):
+				self.test_tree = tree.rect
+
+			self.test_scaled_tree_rect = None
+			mouse = pygame.mouse.get_pos()
+			scaled_tree_rect = tree.rect.copy()
+			self.test_scaled_tree_rect = scaled_tree_rect
+
+			if scaled_tree_rect.collidepoint((mouse[0] + self.offset[0]), # * self.zoom_scale
+									(mouse[1] + self.offset[1])):
+				self.test_tree = tree.rect
+				self.test_tree_selected_index = str(i) + ' ' + tree.name + ' Размер: ' + str(tree.size)
+				pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
 		self.internal_surf.fill('#71ddee')
 
 		# ground 
 		ground_offset = self.ground_rect.topleft - self.offset + self.internal_offset
+		self.test_ground_offset = ground_offset
 		self.internal_surf.blit(self.ground_surf, ground_offset)
 
 		# active elements
@@ -179,8 +205,8 @@ class CameraGroup(pygame.sprite.Group):
 		if self.zoom_scale < 0:
 			self.zoom_scale = 0.01
 
-		scaled_surf = pygame.transform.scale(self.internal_surf,self.internal_surface_size_vector * self.zoom_scale)
-		scaled_rect = scaled_surf.get_rect(center=(self.half_w,self.half_h))
+		scaled_surf = pygame.transform.scale(self.internal_surf, self.internal_surface_size_vector * self.zoom_scale)
+		scaled_rect = scaled_surf.get_rect(center=(self.half_w, self.half_h))
 
 		self.display_surface.blit(scaled_surf, scaled_rect)
 
@@ -197,10 +223,13 @@ class CameraGame:
 		self.camera_group = CameraGroup(base_path=self.base_path)
 		self.player = Player((640, 360), self.camera_group, base_path=self.base_path)
 
+		self.tree_list = []
 		for i in range(20):
 			random_x = randint(1000, 2000)
 			random_y = randint(1000, 2000)
-			Tree((random_x, random_y), self.camera_group, base_path=self.base_path)
+			tree = Tree((random_x, random_y), self.camera_group, base_path=self.base_path)
+			tree.name = tree.name + ' ' + str(i+1)
+			self.tree_list.append(tree)
 
 	def set_running(self, value):
 		self.running = value
@@ -229,7 +258,7 @@ class CameraGame:
 		self.screen.fill('#71ddee')
 
 		self.camera_group.update()
-		self.camera_group.custom_draw(self.player)
+		self.camera_group.custom_draw(self.player, self.tree_list)
 
 		# Статистика
 		stats = [
@@ -237,15 +266,20 @@ class CameraGame:
 				('camera_group.offset', self.camera_group.offset),
 				('camera_group.camera_rect', self.camera_group.camera_rect),
 				('test_stat', self.camera_group.test_stat),
-				('zoom_scale', self.camera_group.zoom_scale)
+				('zoom_scale', self.camera_group.zoom_scale),
+				('len(tree_list)', len(self.tree_list)),
+				('test_ground_offset', self.camera_group.test_ground_offset),
+				('test_tree', self.camera_group.test_tree),
+				('pygame.mouse.get_pos()', pygame.mouse.get_pos()),
+				('test_scaled_tree_rect', self.camera_group.test_scaled_tree_rect),
+				('test_tree_selected_index', self.camera_group.test_tree_selected_index)
 				]
 		for i, line in enumerate(stats):
 			font = pygame.font.Font(None, 24)
 			surf_text = font.render(str(line[0]) + ': ' + str(line[1]), True, (0, 0, 0))
 			self.screen.blit(surf_text, (100, 200 + (i*30)))
 
-
-		pygame.display.update()
+		#pygame.display.update()
 		self.clock.tick(60)
 
 
@@ -259,10 +293,11 @@ def main():
 	camera_group = CameraGroup()
 	player = Player((640, 360), camera_group)
 
+	tree_list = []
 	for i in range(20):
 		random_x = randint(1000, 2000)
 		random_y = randint(1000, 2000)
-		Tree((random_x, random_y), camera_group)
+		tree_list.append(Tree((random_x, random_y), camera_group))
 
 	while True:
 		for event in pygame.event.get():
