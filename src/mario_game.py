@@ -405,8 +405,6 @@ def main():
 
         game.run(events)
 
-        #pygame.display.flip()
-
     pygame.quit()
 
 

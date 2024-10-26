@@ -133,6 +133,7 @@ class CameraGame:
             stats = [
                 ('Дерево', ''),
                 ('test_tree', self.camera_group.test_tree),
+				('Деревьево номер', self.camera_group.tree_selected_index),
                 ('Собрано деревьев', self.camera_group.test_tree_done_count)
             ]
 
@@ -149,7 +150,6 @@ class CameraGame:
 
         self.screen.blit(panel_surf, (0, 0))
 
-        # pygame.display.update()
 
 # def main():
 # 	pygame.init()
