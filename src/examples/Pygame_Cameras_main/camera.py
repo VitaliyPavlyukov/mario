@@ -16,8 +16,6 @@ class CameraGame:
         self.base_path = base_path
         self.font = pygame.font.Font(None, 24)
 
-        self.clock = pygame.time.Clock()
-
         # setup
         self.camera_group = CameraGroup(base_path=self.base_path)
         self.player = Player((1000, 1000), self.camera_group, base_path=self.base_path)
@@ -152,7 +150,6 @@ class CameraGame:
         self.screen.blit(panel_surf, (0, 0))
 
         # pygame.display.update()
-        # self.clock.tick(60)
 
 # def main():
 # 	pygame.init()

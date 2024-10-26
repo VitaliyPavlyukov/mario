@@ -105,6 +105,7 @@ class Game:
                 self.screen.blit(self.button_camera_start.surf_text, self.button_camera_start.rect_text)
 
             pygame.display.flip()
+            clock.tick(60)
 
         pygame.quit()
 
