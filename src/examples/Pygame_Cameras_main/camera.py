@@ -79,7 +79,8 @@ class CameraGame:
 				('pygame.mouse.get_pos()', pygame.mouse.get_pos()),
 				('test_scaled_tree_rect', self.camera_group.test_scaled_tree_rect),
 				('test_tree_selected_index', self.camera_group.test_tree_selected_index),
-				('test_worker', self.camera_group.test_worker)
+				('test_worker', self.camera_group.test_worker),
+				('Собрано деревьев', self.camera_group.test_tree_done_count)
 				]
 		for i, line in enumerate(stats):
 			font = pygame.font.Font(None, 24)
