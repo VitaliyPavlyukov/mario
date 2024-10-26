@@ -10,6 +10,9 @@ class Worker(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
         self.speed = 5  # default 5
 
+        self.tree_selected = None
+        self.mouse_selected = False
+
     def input(self):
         keys = pygame.key.get_pressed()
 
