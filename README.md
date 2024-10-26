@@ -2,6 +2,7 @@
 
 - [pygame-tutorial](https://mrtsepa.gitbooks.io/pygame-tutorial/content/reference/pygame/events.html)
 - [pygame modules](https://proproprogs.ru/modules/klass-rect-ego-rol-svoystva-i-metody?ysclid=lztv9uky1q741635320)
+- [pygame шпаргалка](https://waksoft.susu.ru/2019/04/24/pygame-shpargalka-dlja-ispolzovanija/)
 - [Приключения Марио. Глава 1. Грибное Королевство](https://proza.ru/2013/06/17/1053?ysclid=lzvcgzuzst571387686)
 
 ### Git
