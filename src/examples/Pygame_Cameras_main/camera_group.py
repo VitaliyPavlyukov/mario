@@ -15,6 +15,7 @@ class CameraGroup(pygame.sprite.Group):
         self.test_scaled_tree_rect = None
         self.test_tree_selected_index = None
         self.test_worker = None
+        self.test_tree_done_count = 0
 
         # camera offset
         self.offset = pygame.math.Vector2()
@@ -188,6 +189,7 @@ class CameraGroup(pygame.sprite.Group):
             if p_min_tree.rect.collidepoint((worker.rect.center[0], worker.rect.center[1])):
                 p_min_tree.transform()
                 p_min_tree.done = 1
+                self.test_tree_done_count += 1
 
             if worker.rect.center[1] <= p_min_tree.rect.center[1]:
                 worker.move('down')
