@@ -14,6 +14,7 @@ class Tree(pygame.sprite.Sprite):
 	def transform(self):
 		self.image = pygame.transform.scale(self.image, (50, 50))
 
+
 class TreeSmall(pygame.sprite.Sprite):
 	def __init__(self, pos, base_path=''):
 		super().__init__()

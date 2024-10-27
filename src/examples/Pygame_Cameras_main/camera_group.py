@@ -13,8 +13,10 @@ class CameraGroup(pygame.sprite.Group):
         self.test_stat = None
         self.test_ground_offset = None
         self.test_tree = None
-        self.test_scaled_tree_rect = None
         self.test_tree_selected_index = None
+        self.test_tree_second = None
+        self.test_tree_selected_index_second = None
+        self.test_scaled_tree_rect = None
         self.test_worker = None
         self.test_house = None
         self.test_tree_done_count = 0
@@ -262,18 +264,22 @@ class CameraGroup(pygame.sprite.Group):
             self.test_scaled_tree_rect = None
 
             scaled_tree_rect = tree.rect.copy()
+            #scaled_tree_rect.x = scaled_tree_rect.x * self.zoom_scale
+            #scaled_tree_rect.y = scaled_tree_rect.y * self.zoom_scale
             self.test_scaled_tree_rect = scaled_tree_rect
 
             # Дерево
             if scaled_tree_rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
                                              (mouse[1] + self.offset[1])):
-                self.test_tree = tree.rect
+                self.test_tree = str(tree.rect) + ' ' + str(scaled_tree_rect)
                 self.test_tree_selected_index = str(i) + ' ' + tree.name + ' Размер: ' + str(tree.size)
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
                 for event in events:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         self.tree_selected_index = i
+                        self.test_tree_second = str(tree.rect) + ' ' + str(scaled_tree_rect)
+                        self.test_tree_selected_index_second = str(i) + ' ' + tree.name + ' Размер: ' + str(tree.size)
 
         # Дом
         if house.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale

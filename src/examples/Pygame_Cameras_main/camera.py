@@ -165,7 +165,9 @@ class CameraGame:
             stats = [
                 ('Дерево', ''),
                 ('test_tree', self.camera_group.test_tree),
+                ('test_tree_second', self.camera_group.test_tree_second),
                 ('Деревьево номер', self.camera_group.tree_selected_index),
+                ('Деревьево номер second', self.camera_group.test_tree_selected_index_second),
                 ('Собрано деревьев', self.camera_group.test_tree_done_count)
             ]
         elif p_selected_object == 'common stat':
