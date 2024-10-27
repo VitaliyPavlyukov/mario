@@ -22,7 +22,7 @@ class CameraGame:
         self.worker = Worker((1000, 1150), self.camera_group, base_path=self.base_path)
 
         self.tree_list = []
-        for i in range(2):
+        for i in range(20):
             random_x = randint(1000, 2000)
             random_y = randint(1000, 2000)
             tree = Tree((random_x, random_y), self.camera_group, base_path=self.base_path)
