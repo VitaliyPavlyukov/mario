@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 from random import randint
-from examples.Pygame_Cameras_main.tree import Tree
+from examples.Pygame_Cameras_main.tree import Tree, TreeSmall
 from examples.Pygame_Cameras_main.house import House
 from examples.Pygame_Cameras_main.player import Player
 from examples.Pygame_Cameras_main.worker import Worker
@@ -29,10 +29,23 @@ class CameraGame:
             tree.name = tree.name + ' ' + str(i + 1)
             self.tree_list.append(tree)
 
+        self.panel_tree_small = TreeSmall((10, 10), base_path=self.base_path)
+        self.panel_tree_small.transform()
+        self.panel_tree_small_new = TreeSmall((10, 10), base_path=self.base_path)
+        self.panel_tree_small_new.transform()
+        self.panel_tree_small_selected = None
+        self.stat_common_selected = True
+        self.set_active_house = False
+
         self.house = House((640, 1000), self.camera_group, base_path=self.base_path)
 
         self.camera_group.offset = (210, 785)
 
+    def add_tree(self, tree_small):
+        tree = Tree((tree_small.rect.x + self.camera_group.offset[0],
+                     tree_small.rect.y + self.camera_group.offset[1]),
+                    self.camera_group, base_path=self.base_path)
+        self.tree_list.append(tree)
     def set_running(self, value):
         self.running = value
 
@@ -58,11 +71,28 @@ class CameraGame:
         if self.camera_group.tree_selected_index >= 0:
             return 'tree'
 
+        if self.stat_common_selected:
+            return 'common stat'
+
         return None
+
+    def get_selected_new_objects(self):
+        if self.panel_tree_small_selected:
+            return 'new tree'
+
+        return None
+
+    def select_house_after_common(self):
+        """ Выбираем дом если включен флаг, затем флаг выключаем """
+        if self.set_active_house:
+            self.house.mouse_selected = True
+            self.set_active_house = False
 
     def run(self, events):
         if not self.running:
             return
+
+        mouse = pygame.mouse.get_pos()
 
         for event in events:
 
@@ -77,8 +107,24 @@ class CameraGame:
                 self.camera_group.zoom_scale += event.y * 0.03
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if self.get_selected_objects():
+                if self.panel_tree_small_selected:
+                    self.panel_tree_small_selected = False
+                    # Оставляем объект
+                    self.add_tree(self.panel_tree_small_new)
+                    self.set_active_house = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.panel_tree_small.rect.collidepoint(mouse[0], mouse[1]):
+                    self.panel_tree_small_selected = True
+
+            # Если нажали мышкой на экране и не выбрали ни одного объекта
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.get_selected_objects() and not self.get_selected_new_objects():
+                    # == 'common stat'
                     self.select_objects(False)
+                    self.stat_common_selected = True
+
+            self.select_house_after_common()
 
         self.screen.fill('#71ddee')
 
@@ -92,8 +138,37 @@ class CameraGame:
 
         p_selected_object = self.get_selected_objects()
         stats = []
+        p_stats_y = 300
 
-        if not p_selected_object:
+        if p_selected_object == 'house':
+            # Статистика
+            stats = [
+                ('Дом', ''),
+                ('Собрано деревьев в доме', self.house.done_tree_count),
+                ('Новое дерево', self.panel_tree_small.rect)
+            ]
+            if self.panel_tree_small_selected:
+                stats.append(('Выбрано дерево', self.panel_tree_small_selected))
+            self.panel_tree_small.rect.x = 100
+            self.panel_tree_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
+            panel_surf.blit(self.panel_tree_small.image, self.panel_tree_small.rect)
+
+        elif p_selected_object == 'worker':
+            # Статистика
+            stats = [
+                ('Рабочий', ''),
+                ('test_worker', self.camera_group.test_worker)
+            ]
+
+        elif p_selected_object == 'tree':
+            # Статистика
+            stats = [
+                ('Дерево', ''),
+                ('test_tree', self.camera_group.test_tree),
+                ('Деревьево номер', self.camera_group.tree_selected_index),
+                ('Собрано деревьев', self.camera_group.test_tree_done_count)
+            ]
+        elif p_selected_object == 'common stat':
             # Статистика
             stats = [
                 ('Статистика', ''),
@@ -114,42 +189,27 @@ class CameraGame:
                 ('Собрано деревьев в доме', self.house.done_tree_count)
             ]
 
-        elif p_selected_object == 'house':
-            # Статистика
-            stats = [
-                ('Дом', ''),
-                ('Собрано деревьев в доме', self.house.done_tree_count)
-            ]
-
-        elif p_selected_object == 'worker':
-            # Статистика
-            stats = [
-                ('Рабочий', ''),
-                ('test_worker', self.camera_group.test_worker)
-            ]
-
-        elif p_selected_object == 'tree':
-            # Статистика
-            stats = [
-                ('Дерево', ''),
-                ('test_tree', self.camera_group.test_tree),
-				('Деревьево номер', self.camera_group.tree_selected_index),
-                ('Собрано деревьев', self.camera_group.test_tree_done_count)
-            ]
-
         # Панель управления
         # Текст панели
         for i, line in enumerate(stats):
             surf_text = self.font.render(str(line[0]) + ': ' + str(line[1]), True, (255, 255, 255))
-            panel_surf.blit(surf_text, (10, 300 + (i * 30)))
+            panel_surf.blit(surf_text, (10, p_stats_y + (i * 30)))
 
         # Миникарта
         scaled_surf = pygame.transform.scale(self.camera_group.internal_surf,
                                              self.camera_group.internal_surface_size_vector * 0.1)
         panel_surf.blit(scaled_surf, (0, 0))
 
-        self.screen.blit(panel_surf, (0, 0))
+        # Удерживаем мышкой новый объект
+        if self.panel_tree_small_selected:
+            self.panel_tree_small_new.rect.x = mouse[0]
+            self.panel_tree_small_new.rect.y = mouse[1]
+            self.screen.blit(self.panel_tree_small_new.image, self.panel_tree_small_new.rect)
+        # else:
+        #     # Оставляем объект
+        #     self.add_tree(self.panel_tree_small_new)
 
+        self.screen.blit(panel_surf, (0, 0))
 
 # def main():
 # 	pygame.init()
