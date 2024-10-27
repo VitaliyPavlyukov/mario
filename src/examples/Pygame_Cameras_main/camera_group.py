@@ -130,6 +130,7 @@ class CameraGroup(pygame.sprite.Group):
 
     def get_min_tree(self, worker, tree_list):
         # Ближайшее дерево по y
+        p_min_tree = None
         p_min_y = -1
         p_min_tree_y = -1
 
@@ -159,19 +160,34 @@ class CameraGroup(pygame.sprite.Group):
                 p_min_x = tree.rect.center[0]
                 p_min_tree_x = i
 
-        p_tree_y = tree_list[p_min_tree_y]
-        p_tree_x = tree_list[p_min_tree_x]
+        p_tree_y = None
+        p_tree_x = None
+        p_distance_tree_y = None
+        p_distance_tree_x = None
 
-        p_distance_tree_y = (abs(worker.rect.center[0] - p_tree_y.rect.center[0])
-                             + abs(worker.rect.center[1] - p_tree_y.rect.center[1]))
+        if p_min_tree_y >= 0:
+            p_tree_y = tree_list[p_min_tree_y]
 
-        p_distance_tree_x = (abs(worker.rect.center[0] - p_tree_x.rect.center[0])
-                             + abs(worker.rect.center[1] - p_tree_x.rect.center[1]))
+            p_distance_tree_y = (abs(worker.rect.center[0] - p_tree_y.rect.center[0])
+                                 + abs(worker.rect.center[1] - p_tree_y.rect.center[1]))
+        if p_min_tree_x >= 0:
+            p_tree_x = tree_list[p_min_tree_x]
+            p_distance_tree_x = (abs(worker.rect.center[0] - p_tree_x.rect.center[0])
+                                 + abs(worker.rect.center[1] - p_tree_x.rect.center[1]))
 
-        if p_distance_tree_x <= p_distance_tree_y:
-            p_min_tree = p_tree_x
-        else:
-            p_min_tree = p_tree_y
+        if p_distance_tree_y:
+            if not p_distance_tree_x:
+                return p_tree_y
+
+        if p_distance_tree_x:
+            if not p_distance_tree_y:
+                return p_tree_x
+
+        if p_distance_tree_y and p_distance_tree_x:
+            if p_distance_tree_x <= p_distance_tree_y:
+                p_min_tree = p_tree_x
+            else:
+                p_min_tree = p_tree_y
 
         return p_min_tree
 
@@ -195,7 +211,10 @@ class CameraGroup(pygame.sprite.Group):
 
         p_min_tree = self.get_min_tree(worker, tree_list)
 
-        self.test_worker = 'worker ' + str(worker.rect.center) + ' tree ' + str(p_min_tree.rect.center)
+        if p_min_tree:
+            self.test_worker = 'worker ' + str(worker.rect.center) + ' tree ' + str(p_min_tree.rect.center)
+        else:
+            self.test_worker = 'worker ' + str(worker.rect.center) + ' tree ' + 'None'
 
         # Взаимодействие с ближайшим деревом
         if not worker.tree_selected:
