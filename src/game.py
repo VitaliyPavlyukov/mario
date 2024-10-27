@@ -48,6 +48,7 @@ class Game:
     def run(self):
 
         self.screen.fill(self.screen_color)
+        fullscreen = False
 
         clock = pygame.time.Clock()
 
@@ -61,6 +62,15 @@ class Game:
 
                 if event.type == pygame.QUIT:
                     running = False
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:  # enter/exit fullscreen upon pressing F11
+                        if not fullscreen:
+                            screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+                            fullscreen = True
+                        else:
+                            screen = pygame.display.set_mode(self.window_size)
+                            fullscreen = False
 
                 if not self.marioGame_running_flag and not self.сamera_game.running:
                     if event.type == pygame.KEYDOWN:

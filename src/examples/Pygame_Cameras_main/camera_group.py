@@ -128,24 +128,7 @@ class CameraGroup(pygame.sprite.Group):
         if keys[pygame.K_e]:
             self.zoom_scale -= 0.1
 
-    def custom_draw(self, events, player, worker, tree_list, house):
-
-        # self.center_target_camera(player)
-        # self.box_target_camera(player)
-        # self.keyboard_control()
-        self.mouse_control()
-        self.zoom_keyboard_control()
-
-        # Взаимодействие с деревьями
-        self.test_tree = None
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-
-        if worker.tree_selected:
-            worker.tree_selected.rect.center = worker.rect.center
-
-        # Дом
-        self.test_house = house.rect.center
-
+    def get_min_tree(self, worker, tree_list):
         # Ближайшее дерево по y
         p_min_y = -1
         p_min_tree_y = -1
@@ -190,11 +173,33 @@ class CameraGroup(pygame.sprite.Group):
         else:
             p_min_tree = p_tree_y
 
+        return p_min_tree
+
+    def custom_draw(self, events, player, worker, tree_list, house):
+
+        # self.center_target_camera(player)
+        # self.box_target_camera(player)
+        # self.keyboard_control()
+        self.mouse_control()
+        self.zoom_keyboard_control()
+
+        # Взаимодействие с деревьями
+        self.test_tree = None
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+        if worker.tree_selected:
+            worker.tree_selected.rect.center = worker.rect.center
+
+        # Дом
+        self.test_house = house.rect.center
+
+        p_min_tree = self.get_min_tree(worker, tree_list)
+
         self.test_worker = 'worker ' + str(worker.rect.center) + ' tree ' + str(p_min_tree.rect.center)
 
         # Взаимодействие с ближайшим деревом
         if not worker.tree_selected:
-            if p_min_y > -1 or p_min_tree_y > -1:
+            if p_min_tree:
                 if p_min_tree.rect.collidepoint((worker.rect.center[0], worker.rect.center[1])):
                     p_min_tree.transform()
                     p_min_tree.done = 1
