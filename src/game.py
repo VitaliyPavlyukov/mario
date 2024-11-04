@@ -19,9 +19,11 @@ class Game:
         self.window_size = (0, 0) #scaled 1707 960
         self.screen = pygame.display.set_mode(self.window_size, pygame.RESIZABLE | pygame.OPENGL)
 
+        self.clock = pygame.time.Clock()
+
         self.mario_game = MarioGame(self.screen)
         self.marioGame_running_flag = False
-        self.сamera_game = CameraGame(self.screen, base_path='examples/Pygame_Cameras_main')
+        self.сamera_game = CameraGame(self.screen, self.clock, base_path='examples/Pygame_Cameras_main')
         self.сamera_game_running_flag = False
 
         self.font = pygame.font.Font(None, 32)
@@ -55,8 +57,6 @@ class Game:
 
         self.screen.fill(self.screen_color)
         fullscreen = False
-
-        clock = pygame.time.Clock()
 
         drivers = pygame.display.get_driver()
         print('drivers', drivers)
@@ -126,7 +126,7 @@ class Game:
                 self.screen.blit(self.button_camera_start.surf_text, self.button_camera_start.rect_text)
 
             pygame.display.flip()
-            clock.tick(60)
+            self.clock.tick(60)
 
         pygame.quit()
 

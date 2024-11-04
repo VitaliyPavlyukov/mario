@@ -3,6 +3,7 @@ import sys
 import os
 from random import randint
 from examples.Pygame_Cameras_main.tree import Tree, TreeSmall
+from examples.Pygame_Cameras_main.gold import Gold
 from examples.Pygame_Cameras_main.house import House
 from examples.Pygame_Cameras_main.house_gold_mine import HouseGoldMine
 from examples.Pygame_Cameras_main.player import Player
@@ -11,9 +12,10 @@ from examples.Pygame_Cameras_main.camera_group import CameraGroup
 
 
 class CameraGame:
-    def __init__(self, screen, base_path):
+    def __init__(self, screen, clock, base_path):
         self.running = False
         self.screen = screen
+        self.clock = clock
         self.base_path = base_path
         self.font = pygame.font.Font(None, 24)
 
@@ -21,6 +23,7 @@ class CameraGame:
         self.camera_group = CameraGroup(base_path=self.base_path)
         self.player = Player((1000, 1000), self.camera_group, base_path=self.base_path)
         self.worker = Worker((1000, 1150), self.camera_group, base_path=self.base_path)
+        self.worker_gold_miner = Worker((1000, 1050), self.camera_group, base_path=self.base_path)
 
         self.tree_list = []
         for i in range(20):
@@ -29,6 +32,8 @@ class CameraGame:
             tree = Tree((random_x, random_y), self.camera_group, base_path=self.base_path)
             tree.name = tree.name + ' ' + str(i + 1)
             self.tree_list.append(tree)
+
+        self.gold = Gold((0, 0), self.camera_group, base_path=self.base_path)
 
         self.panel_tree_small = TreeSmall((10, 10), base_path=self.base_path)
         self.panel_tree_small.transform()
@@ -132,7 +137,8 @@ class CameraGame:
 
         self.camera_group.update()
         self.camera_group.custom_draw(events, self.player, self.worker, self.tree_list,
-                                      self.house, self.house_gold_mine)
+                                      self.house, self.house_gold_mine, self.worker_gold_miner,
+                                      self.gold)
 
         # Панель управления
         w, display_height = pygame.display.get_surface().get_size()
@@ -149,6 +155,7 @@ class CameraGame:
             stats = [
                 ('Дом', ''),
                 ('Собрано деревьев в доме', self.house.done_tree_count),
+                ('Золото', self.house.done_gold_count),
                 ('Новое дерево', self.panel_tree_small.rect)
             ]
             # if self.panel_tree_small_selected:
@@ -178,6 +185,7 @@ class CameraGame:
             # Статистика
             stats = [
                 ('Статистика', ''),
+                ('fps', self.clock.get_fps()),
                 ('player.rect', self.player.rect),
                 ('camera_group.offset', self.camera_group.offset),
                 ('camera_group.camera_rect', self.camera_group.camera_rect),

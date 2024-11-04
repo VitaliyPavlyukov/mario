@@ -14,6 +14,7 @@ class House(pygame.sprite.Sprite):
 		self.name = 'Дом'
 		self.size = 1
 		self.done_tree_count = 0
+		self.done_gold_count = 0
 		self.mouse_selected = False
 
 	def transform(self):

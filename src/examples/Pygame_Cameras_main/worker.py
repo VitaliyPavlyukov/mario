@@ -1,5 +1,6 @@
 import os
 import pygame
+import datetime
 
 
 class Worker(pygame.sprite.Sprite):
@@ -11,7 +12,25 @@ class Worker(pygame.sprite.Sprite):
         self.speed = 5  # default 5
 
         self.tree_selected = None
+        self.gold_selected = None
         self.mouse_selected = False
+
+        self.wait_seconds = 2
+        self.prev_time = datetime.datetime.now()
+        self.paused = False
+
+    def has_pause(self):
+        if self.paused:
+            now = datetime.datetime.now()
+            if (now - self.prev_time).total_seconds() >= self.wait_seconds:
+                self.prev_time = now
+                self.paused = False
+
+        return self.paused
+
+    def set_pause(self):
+        self.paused = True
+        self.prev_time = datetime.datetime.now()
 
     def input(self):
         keys = pygame.key.get_pressed()
