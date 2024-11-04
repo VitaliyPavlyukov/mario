@@ -23,6 +23,7 @@ class Worker(pygame.sprite.Sprite):
         self.tree_selected = None
         self.gold_selected = None
         self.mouse_selected = False
+        self.active_move = True
 
         self.wait_seconds = 2
         self.prev_time = datetime.datetime.now()
@@ -95,7 +96,7 @@ class Worker(pygame.sprite.Sprite):
         self.direction.x = 0
         self.direction.y = 0
 
-        if len(self.images) > 0:
+        if len(self.images) > 0 and self.active_move:
             now = datetime.datetime.now()
             if self.set_image_pause():
                 if self.image_index < len(self.images):

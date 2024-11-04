@@ -53,6 +53,7 @@ class CameraGame:
                      tree_small.rect.y + self.camera_group.offset[1]),
                     self.camera_group, base_path=self.base_path)
         self.tree_list.append(tree)
+
     def set_running(self, value):
         self.running = value
 
@@ -63,7 +64,9 @@ class CameraGame:
 
     def select_objects(self, value):
         self.house.mouse_selected = value
+        self.house_gold_mine.mouse_selected = value
         self.worker.mouse_selected = value
+        self.worker_gold_miner.mouse_selected = value
 
         if not value:
             self.camera_group.tree_selected_index = -1
@@ -72,8 +75,14 @@ class CameraGame:
         if self.house.mouse_selected:
             return 'house'
 
+        if self.house_gold_mine.mouse_selected:
+            return 'house_gold_mine'
+
         if self.worker.mouse_selected:
             return 'worker'
+
+        if self.worker_gold_miner.mouse_selected:
+            return 'worker_gold_miner'
 
         if self.camera_group.tree_selected_index >= 0:
             return 'tree'
@@ -151,12 +160,10 @@ class CameraGame:
         p_stats_y = 300
 
         if p_selected_object == 'house':
-            # Статистика
             stats = [
                 ('Дом', ''),
                 ('Собрано деревьев в доме', self.house.done_tree_count),
-                ('Золото', self.house.done_gold_count),
-                ('Новое дерево', self.panel_tree_small.rect)
+                ('Золото', self.house.done_gold_count)
             ]
             # if self.panel_tree_small_selected:
             #     stats.append(('Выбрано дерево', self.panel_tree_small_selected))
@@ -164,25 +171,29 @@ class CameraGame:
             self.panel_tree_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
             panel_surf.blit(self.panel_tree_small.image, self.panel_tree_small.rect)
 
+        elif p_selected_object == 'house_gold_mine':
+            stats = [
+                ('Золотая шахта', ''),
+                ('Золото в шахте', self.house_gold_mine.gold_count)
+            ]
+
         elif p_selected_object == 'worker':
-            # Статистика
             stats = [
                 ('Рабочий', ''),
                 ('test_worker', self.camera_group.test_worker)
             ]
 
+        elif p_selected_object == 'worker_gold_miner':
+            stats = [
+                ('Шахтер золота', '')
+            ]
+
         elif p_selected_object == 'tree':
-            # Статистика
             stats = [
                 ('Дерево', ''),
-                ('test_tree', self.camera_group.test_tree),
-                ('test_tree_second', self.camera_group.test_tree_second),
-                ('Деревьево номер', self.camera_group.tree_selected_index),
-                ('Деревьево номер second', self.camera_group.test_tree_selected_index_second),
-                ('Собрано деревьев', self.camera_group.test_tree_done_count)
+                ('Деревьево номер', self.camera_group.tree_selected_index)
             ]
         elif p_selected_object == 'common stat':
-            # Статистика
             stats = [
                 ('Статистика', ''),
                 ('fps', self.clock.get_fps()),

@@ -257,13 +257,15 @@ class CameraGroup(pygame.sprite.Group):
                 worker.move('right')
 
         # Добытчик золота
-        # Идет от дома к шахте
-        if not worker_gold_miner.gold_selected:
+        # Идет от дома к шахте если в ней есть золото
+        if not worker_gold_miner.gold_selected and house_gold_mine.visible:
             gold.visible = False
 
             if house_gold_mine.rect.collidepoint((worker_gold_miner.rect.center[0], worker_gold_miner.rect.center[1])):
                 worker_gold_miner.set_pause()
                 worker_gold_miner.gold_selected = 1
+                house_gold_mine.gold_count -= 1
+                house_gold_mine.check_visible()
 
             self.test_worker_gold_miner = worker_gold_miner.rect.center
             if worker_gold_miner.rect.center[1] + 5 < house_gold_mine.rect.center[1]:
@@ -286,6 +288,9 @@ class CameraGroup(pygame.sprite.Group):
                 if house.rect.collidepoint((worker_gold_miner.rect.center[0], worker_gold_miner.rect.center[1])):
                     house.done_gold_count += 1
                     worker_gold_miner.gold_selected = None
+                    gold.visible = False
+                    if not house_gold_mine.visible:
+                        worker_gold_miner.active_move = False
 
                 if worker_gold_miner.rect.center[1] + 5 < house.rect.center[1]:
                     worker_gold_miner.move('down')
@@ -336,6 +341,16 @@ class CameraGroup(pygame.sprite.Group):
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         house.mouse_selected = True
 
+        # Золотая шахта
+        if house_gold_mine.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
+                                (mouse[1] + self.offset[1])):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+            if not house_gold_mine.mouse_selected:
+                for event in events:
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        house_gold_mine.mouse_selected = True
+
         # Рабочий
         if worker.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
                                     (mouse[1] + self.offset[1])):
@@ -344,6 +359,15 @@ class CameraGroup(pygame.sprite.Group):
                     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         worker.mouse_selected = True
+
+        # Шахтер золота
+        if worker_gold_miner.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
+                                    (mouse[1] + self.offset[1])):
+            if not worker_gold_miner.mouse_selected:
+                for event in events:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        worker_gold_miner.mouse_selected = True
 
         self.internal_surf.fill('#71ddee')
 

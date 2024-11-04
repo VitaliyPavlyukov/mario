@@ -12,9 +12,15 @@ class HouseGoldMine(pygame.sprite.Sprite):
 
 		self.rect = self.image.get_rect(topleft=pos)
 		self.name = 'Дом'
+		self.visible = True
 		self.size = 1
+		self.gold_count = 2
 		self.done_tree_count = 0
 		self.mouse_selected = False
+
+	def check_visible(self):
+		if self.gold_count == 0:
+			self.visible = False
 
 	def transform(self):
 		self.image = pygame.transform.scale(self.image, (50, 50))
