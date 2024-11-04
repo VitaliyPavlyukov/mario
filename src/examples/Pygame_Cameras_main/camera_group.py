@@ -236,7 +236,7 @@ class CameraGroup(pygame.sprite.Group):
 
                 if worker.rect.center[0] >= p_min_tree.rect.center[0]:
                     worker.move('left')
-                elif worker.rect.center[0] < p_min_tree.rect.center[0]:
+                elif worker.rect.center[0] + 5 < p_min_tree.rect.center[0]:
                     worker.move('right')
             else:
                 worker.move('stop')
@@ -253,7 +253,7 @@ class CameraGroup(pygame.sprite.Group):
 
             if worker.rect.center[0] >= house.rect.center[0]:
                 worker.move('left')
-            elif worker.rect.center[0] < house.rect.center[0]:
+            elif worker.rect.center[0] + 5 < house.rect.center[0]:
                 worker.move('right')
 
         # Добытчик золота
@@ -273,7 +273,7 @@ class CameraGroup(pygame.sprite.Group):
 
             if worker_gold_miner.rect.center[0] >= house_gold_mine.rect.center[0]:
                 worker_gold_miner.move('left')
-            elif worker_gold_miner.rect.center[0] < house_gold_mine.rect.center[0]:
+            elif worker_gold_miner.rect.center[0] + 5 < house_gold_mine.rect.center[0]:
                 worker_gold_miner.move('right')
 
         # Идет от шахты к дому
@@ -294,7 +294,7 @@ class CameraGroup(pygame.sprite.Group):
 
                 if worker_gold_miner.rect.center[0] >= house.rect.center[0]:
                     worker_gold_miner.move('left')
-                elif worker_gold_miner.rect.center[0] < house.rect.center[0]:
+                elif worker_gold_miner.rect.center[0] + 5 < house.rect.center[0]:
                     worker_gold_miner.move('right')
             else:
                 worker_gold_miner.move('stop')
