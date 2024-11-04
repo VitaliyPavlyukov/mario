@@ -3,19 +3,27 @@ import pygame
 from mario_game import MarioGame
 from examples.Pygame_Cameras_main.camera import CameraGame
 import sys
-#sys.path.append('examples\\Pygame_Cameras_main')
+#sys.path.append('examples/Pygame_Cameras_main')
 from button import Button
+
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 
 class Game:
     def __init__(self):
         self.init()
-        self.window_size = (1600, 800)
-        self.screen = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
+        self.displayInfo = pygame.display.Info()  # You have to call this before pygame.display.set_mode()
+        print(self.displayInfo.current_w, self.displayInfo.current_h)
+        #print('displayInfo', self.displayInfo)
+        #self.screen_width, screen_height = info.current_w, info.current_h
+        self.window_size = (0, 0) #scaled 1707 960
+        self.screen = pygame.display.set_mode(self.window_size, pygame.RESIZABLE | pygame.OPENGL)
+
+        self.clock = pygame.time.Clock()
 
         self.mario_game = MarioGame(self.screen)
         self.marioGame_running_flag = False
-        self.сamera_game = CameraGame(self.screen, base_path='examples\\Pygame_Cameras_main')
+        self.сamera_game = CameraGame(self.screen, self.clock, base_path='examples/Pygame_Cameras_main')
         self.сamera_game_running_flag = False
 
         self.font = pygame.font.Font(None, 32)
@@ -50,7 +58,8 @@ class Game:
         self.screen.fill(self.screen_color)
         fullscreen = False
 
-        clock = pygame.time.Clock()
+        drivers = pygame.display.get_driver()
+        print('drivers', drivers)
 
         running = True
         while running:
@@ -66,10 +75,12 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_F11:  # enter/exit fullscreen upon pressing F11
                         if not fullscreen:
-                            screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+                            # 2560 1440
+                            # 1920 1080
+                            self.screen = pygame.display.set_mode((2560, 1440), pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE )
                             fullscreen = True
                         else:
-                            screen = pygame.display.set_mode(self.window_size)
+                            self.screen = pygame.display.set_mode(self.window_size)
                             fullscreen = False
 
                 if not self.marioGame_running_flag and not self.сamera_game.running:
@@ -115,7 +126,7 @@ class Game:
                 self.screen.blit(self.button_camera_start.surf_text, self.button_camera_start.rect_text)
 
             pygame.display.flip()
-            clock.tick(60)
+            self.clock.tick(60)
 
         pygame.quit()
 

@@ -2,20 +2,22 @@ import os
 import pygame
 
 
-class House(pygame.sprite.Sprite):
+class HouseGoldMine(pygame.sprite.Sprite):
 	def __init__(self, pos, group, base_path=''):
 		super().__init__(group)
-		self.image = pygame.image.load(os.path.join(base_path, 'graphics/Summer-Medieval-City-2D-Tileset2.png')).convert_alpha()
-		self.image = self.clip(self.image, 165, 0, 308, 326)
+		self.image = pygame.image.load(os.path.join(base_path, 'graphics/zolotaja_shakhta.png')).convert_alpha()
 		self.image = pygame.transform.scale(self.image, (308, 326))
-		self.image.set_colorkey((47, 50, 47))
-
 		self.rect = self.image.get_rect(topleft=pos)
-		self.name = 'Дом'
+		self.name = 'Золотая шахта'
+		self.visible = True
 		self.size = 1
+		self.gold_count = 10
 		self.done_tree_count = 0
-		self.done_gold_count = 0
 		self.mouse_selected = False
+
+	def check_visible(self):
+		if self.gold_count == 0:
+			self.visible = False
 
 	def transform(self):
 		self.image = pygame.transform.scale(self.image, (50, 50))

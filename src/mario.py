@@ -13,7 +13,7 @@ def clip(surface, x, y, x_size, y_size): #Get a part of the image
 class Mario(pygame.sprite.Sprite):
     def __init__(self, screen):
         super(Mario, self).__init__()
-        self.my_image = pygame.image.load("images\\Custom Edited - Mario Customs - Mario Dexters Laboratory Robot Rampage-Style.png")
+        self.my_image = pygame.image.load("images/Custom Edited - Mario Customs - Mario Dexters Laboratory Robot Rampage-Style.png")
         self.back_color = (147, 187, 236)
         self.frame_images = []
         self.screen = screen
@@ -47,7 +47,7 @@ class Mario(pygame.sprite.Sprite):
 
         self.rect = self.current_frame.get_rect()
         self.surf = self.frame_images[self.current_frame_index]
-        self.default_rect_top = 550
+        self.default_rect_top = self.screen.get_height() - 300
         self.rect.move_ip(0, self.default_rect_top)
         self.rect.top = int(self.window_height * 0.85) - int(self.frame_height / 2)
 

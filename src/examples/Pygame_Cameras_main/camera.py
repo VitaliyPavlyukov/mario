@@ -3,23 +3,27 @@ import sys
 import os
 from random import randint
 from examples.Pygame_Cameras_main.tree import Tree, TreeSmall
+from examples.Pygame_Cameras_main.gold import Gold
 from examples.Pygame_Cameras_main.house import House
+from examples.Pygame_Cameras_main.house_gold_mine import HouseGoldMine
 from examples.Pygame_Cameras_main.player import Player
 from examples.Pygame_Cameras_main.worker import Worker
 from examples.Pygame_Cameras_main.camera_group import CameraGroup
 
 
 class CameraGame:
-    def __init__(self, screen, base_path):
+    def __init__(self, screen, clock, base_path):
         self.running = False
         self.screen = screen
+        self.clock = clock
         self.base_path = base_path
         self.font = pygame.font.Font(None, 24)
 
         # setup
         self.camera_group = CameraGroup(base_path=self.base_path)
         self.player = Player((1000, 1000), self.camera_group, base_path=self.base_path)
-        self.worker = Worker((1000, 1150), self.camera_group, base_path=self.base_path)
+        self.worker = Worker((1000, 1150), self.camera_group, type='Worker', base_path=self.base_path)
+        self.worker_gold_miner = Worker((1000, 1050), self.camera_group, type='GoldMiner', base_path=self.base_path)
 
         self.tree_list = []
         for i in range(20):
@@ -28,6 +32,8 @@ class CameraGame:
             tree = Tree((random_x, random_y), self.camera_group, base_path=self.base_path)
             tree.name = tree.name + ' ' + str(i + 1)
             self.tree_list.append(tree)
+
+        self.gold = Gold((0, 0), self.camera_group, base_path=self.base_path)
 
         self.panel_tree_small = TreeSmall((10, 10), base_path=self.base_path)
         self.panel_tree_small.transform()
@@ -38,6 +44,7 @@ class CameraGame:
         self.set_active_house = False
 
         self.house = House((640, 1000), self.camera_group, base_path=self.base_path)
+        self.house_gold_mine = HouseGoldMine((1500, 800), self.camera_group, base_path=self.base_path)
 
         self.camera_group.offset = (210, 785)
 
@@ -46,6 +53,7 @@ class CameraGame:
                      tree_small.rect.y + self.camera_group.offset[1]),
                     self.camera_group, base_path=self.base_path)
         self.tree_list.append(tree)
+
     def set_running(self, value):
         self.running = value
 
@@ -56,7 +64,9 @@ class CameraGame:
 
     def select_objects(self, value):
         self.house.mouse_selected = value
+        self.house_gold_mine.mouse_selected = value
         self.worker.mouse_selected = value
+        self.worker_gold_miner.mouse_selected = value
 
         if not value:
             self.camera_group.tree_selected_index = -1
@@ -65,8 +75,14 @@ class CameraGame:
         if self.house.mouse_selected:
             return 'house'
 
+        if self.house_gold_mine.mouse_selected:
+            return 'house_gold_mine'
+
         if self.worker.mouse_selected:
             return 'worker'
+
+        if self.worker_gold_miner.mouse_selected:
+            return 'worker_gold_miner'
 
         if self.camera_group.tree_selected_index >= 0:
             return 'tree'
@@ -129,49 +145,59 @@ class CameraGame:
         self.screen.fill('#71ddee')
 
         self.camera_group.update()
-        self.camera_group.custom_draw(events, self.player, self.worker, self.tree_list, self.house)
+        self.camera_group.custom_draw(events, self.player, self.worker, self.tree_list,
+                                      self.house, self.house_gold_mine, self.worker_gold_miner,
+                                      self.gold)
 
         # Панель управления
+        w, display_height = pygame.display.get_surface().get_size()
         BLACK = (0, 0, 0)
-        panel_surf = pygame.Surface((400, 800))
-        pygame.draw.rect(panel_surf, BLACK, pygame.Rect(0, 0, 400, 800))
+        panel_surf = pygame.Surface((400, display_height))
+        pygame.draw.rect(panel_surf, BLACK, pygame.Rect(0, 0, 400, display_height))
 
         p_selected_object = self.get_selected_objects()
         stats = []
         p_stats_y = 300
 
         if p_selected_object == 'house':
-            # Статистика
             stats = [
                 ('Дом', ''),
                 ('Собрано деревьев в доме', self.house.done_tree_count),
-                ('Новое дерево', self.panel_tree_small.rect)
+                ('Золото', self.house.done_gold_count)
             ]
-            if self.panel_tree_small_selected:
-                stats.append(('Выбрано дерево', self.panel_tree_small_selected))
+            # if self.panel_tree_small_selected:
+            #     stats.append(('Выбрано дерево', self.panel_tree_small_selected))
             self.panel_tree_small.rect.x = 100
             self.panel_tree_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
             panel_surf.blit(self.panel_tree_small.image, self.panel_tree_small.rect)
 
+        elif p_selected_object == 'house_gold_mine':
+            stats = [
+                ('Золотая шахта', ''),
+                ('Золото в шахте', self.house_gold_mine.gold_count)
+            ]
+
         elif p_selected_object == 'worker':
-            # Статистика
             stats = [
                 ('Рабочий', ''),
                 ('test_worker', self.camera_group.test_worker)
             ]
 
+        elif p_selected_object == 'worker_gold_miner':
+            stats = [
+                ('Шахтер золота', '')
+            ]
+
         elif p_selected_object == 'tree':
-            # Статистика
             stats = [
                 ('Дерево', ''),
-                ('test_tree', self.camera_group.test_tree),
-                ('Деревьево номер', self.camera_group.tree_selected_index),
-                ('Собрано деревьев', self.camera_group.test_tree_done_count)
+                ('Деревьево номер', self.camera_group.tree_selected_index)
             ]
         elif p_selected_object == 'common stat':
-            # Статистика
             stats = [
                 ('Статистика', ''),
+                ('fps', self.clock.get_fps()),
+                ('test_worker_gold_miner', self.camera_group.test_worker_gold_miner),
                 ('player.rect', self.player.rect),
                 ('camera_group.offset', self.camera_group.offset),
                 ('camera_group.camera_rect', self.camera_group.camera_rect),

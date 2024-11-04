@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 from random import randint
+from examples.Pygame_Cameras_main.gold import Gold
 
 
 class CameraGroup(pygame.sprite.Group):
@@ -13,11 +14,14 @@ class CameraGroup(pygame.sprite.Group):
         self.test_stat = None
         self.test_ground_offset = None
         self.test_tree = None
-        self.test_scaled_tree_rect = None
         self.test_tree_selected_index = None
+        self.test_tree_second = None
+        self.test_tree_selected_index_second = None
+        self.test_scaled_tree_rect = None
         self.test_worker = None
         self.test_house = None
         self.test_tree_done_count = 0
+        self.worker_gold_miner = None
 
         # camera offset
         self.offset = pygame.math.Vector2()
@@ -130,6 +134,7 @@ class CameraGroup(pygame.sprite.Group):
 
     def get_min_tree(self, worker, tree_list):
         # Ближайшее дерево по y
+        p_min_tree = None
         p_min_y = -1
         p_min_tree_y = -1
 
@@ -159,23 +164,38 @@ class CameraGroup(pygame.sprite.Group):
                 p_min_x = tree.rect.center[0]
                 p_min_tree_x = i
 
-        p_tree_y = tree_list[p_min_tree_y]
-        p_tree_x = tree_list[p_min_tree_x]
+        p_tree_y = None
+        p_tree_x = None
+        p_distance_tree_y = None
+        p_distance_tree_x = None
 
-        p_distance_tree_y = (abs(worker.rect.center[0] - p_tree_y.rect.center[0])
-                             + abs(worker.rect.center[1] - p_tree_y.rect.center[1]))
+        if p_min_tree_y >= 0:
+            p_tree_y = tree_list[p_min_tree_y]
 
-        p_distance_tree_x = (abs(worker.rect.center[0] - p_tree_x.rect.center[0])
-                             + abs(worker.rect.center[1] - p_tree_x.rect.center[1]))
+            p_distance_tree_y = (abs(worker.rect.center[0] - p_tree_y.rect.center[0])
+                                 + abs(worker.rect.center[1] - p_tree_y.rect.center[1]))
+        if p_min_tree_x >= 0:
+            p_tree_x = tree_list[p_min_tree_x]
+            p_distance_tree_x = (abs(worker.rect.center[0] - p_tree_x.rect.center[0])
+                                 + abs(worker.rect.center[1] - p_tree_x.rect.center[1]))
 
-        if p_distance_tree_x <= p_distance_tree_y:
-            p_min_tree = p_tree_x
-        else:
-            p_min_tree = p_tree_y
+        if p_distance_tree_y:
+            if not p_distance_tree_x:
+                return p_tree_y
+
+        if p_distance_tree_x:
+            if not p_distance_tree_y:
+                return p_tree_x
+
+        if p_distance_tree_y and p_distance_tree_x:
+            if p_distance_tree_x <= p_distance_tree_y:
+                p_min_tree = p_tree_x
+            else:
+                p_min_tree = p_tree_y
 
         return p_min_tree
 
-    def custom_draw(self, events, player, worker, tree_list, house):
+    def custom_draw(self, events, player, worker, tree_list, house, house_gold_mine, worker_gold_miner, gold):
 
         # self.center_target_camera(player)
         # self.box_target_camera(player)
@@ -195,7 +215,10 @@ class CameraGroup(pygame.sprite.Group):
 
         p_min_tree = self.get_min_tree(worker, tree_list)
 
-        self.test_worker = 'worker ' + str(worker.rect.center) + ' tree ' + str(p_min_tree.rect.center)
+        if p_min_tree:
+            self.test_worker = 'worker ' + str(worker.rect.center) + ' tree ' + str(p_min_tree.rect.center)
+        else:
+            self.test_worker = 'worker ' + str(worker.rect.center) + ' tree ' + 'None'
 
         # Взаимодействие с ближайшим деревом
         if not worker.tree_selected:
@@ -206,14 +229,14 @@ class CameraGroup(pygame.sprite.Group):
                     self.test_tree_done_count += 1
                     worker.tree_selected = p_min_tree
 
-                if worker.rect.center[1] <= p_min_tree.rect.center[1]:
+                if worker.rect.center[1] + 5 < p_min_tree.rect.center[1]:
                     worker.move('down')
-                else:
+                elif worker.rect.center[1] >= p_min_tree.rect.center[1]:
                     worker.move('up')
 
                 if worker.rect.center[0] >= p_min_tree.rect.center[0]:
                     worker.move('left')
-                else:
+                elif worker.rect.center[0] + 5 < p_min_tree.rect.center[0]:
                     worker.move('right')
             else:
                 worker.move('stop')
@@ -223,15 +246,63 @@ class CameraGroup(pygame.sprite.Group):
                 house.done_tree_count += 1
                 worker.tree_selected = None
 
-            if worker.rect.center[1] <= house.rect.center[1]:
+            if worker.rect.center[1] + 5 < house.rect.center[1]:
                 worker.move('down')
-            else:
+            elif worker.rect.center[1] >= house.rect.center[1]:
                 worker.move('up')
 
             if worker.rect.center[0] >= house.rect.center[0]:
                 worker.move('left')
-            else:
+            elif worker.rect.center[0] + 5 < house.rect.center[0]:
                 worker.move('right')
+
+        # Добытчик золота
+        # Идет от дома к шахте если в ней есть золото
+        if not worker_gold_miner.gold_selected and house_gold_mine.visible:
+            gold.visible = False
+
+            if house_gold_mine.rect.collidepoint((worker_gold_miner.rect.center[0], worker_gold_miner.rect.center[1])):
+                worker_gold_miner.set_pause()
+                worker_gold_miner.gold_selected = 1
+                house_gold_mine.gold_count -= 1
+                house_gold_mine.check_visible()
+
+            self.test_worker_gold_miner = worker_gold_miner.rect.center
+            if worker_gold_miner.rect.center[1] + 5 < house_gold_mine.rect.center[1]:
+                worker_gold_miner.move('down')
+            elif worker_gold_miner.rect.center[1] >= house_gold_mine.rect.center[1]:
+                worker_gold_miner.move('up')
+
+            if worker_gold_miner.rect.center[0] >= house_gold_mine.rect.center[0]:
+                worker_gold_miner.move('left')
+            elif worker_gold_miner.rect.center[0] + 5 < house_gold_mine.rect.center[0]:
+                worker_gold_miner.move('right')
+
+        # Идет от шахты к дому
+        elif worker_gold_miner.gold_selected:
+
+            gold.rect.center = worker_gold_miner.rect.center
+            gold.visible = True
+
+            if not worker_gold_miner.has_pause():
+                if house.rect.collidepoint((worker_gold_miner.rect.center[0], worker_gold_miner.rect.center[1])):
+                    house.done_gold_count += 1
+                    worker_gold_miner.gold_selected = None
+                    gold.visible = False
+                    if not house_gold_mine.visible:
+                        worker_gold_miner.active_move = False
+
+                if worker_gold_miner.rect.center[1] + 5 < house.rect.center[1]:
+                    worker_gold_miner.move('down')
+                elif worker_gold_miner.rect.center[1] >= house.rect.center[1]:
+                    worker_gold_miner.move('up')
+
+                if worker_gold_miner.rect.center[0] >= house.rect.center[0]:
+                    worker_gold_miner.move('left')
+                elif worker_gold_miner.rect.center[0] + 5 < house.rect.center[0]:
+                    worker_gold_miner.move('right')
+            else:
+                worker_gold_miner.move('stop')
 
         mouse = pygame.mouse.get_pos()
 
@@ -243,18 +314,22 @@ class CameraGroup(pygame.sprite.Group):
             self.test_scaled_tree_rect = None
 
             scaled_tree_rect = tree.rect.copy()
+            #scaled_tree_rect.x = scaled_tree_rect.x * self.zoom_scale
+            #scaled_tree_rect.y = scaled_tree_rect.y * self.zoom_scale
             self.test_scaled_tree_rect = scaled_tree_rect
 
             # Дерево
             if scaled_tree_rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
                                              (mouse[1] + self.offset[1])):
-                self.test_tree = tree.rect
+                self.test_tree = str(tree.rect) + ' ' + str(scaled_tree_rect)
                 self.test_tree_selected_index = str(i) + ' ' + tree.name + ' Размер: ' + str(tree.size)
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
                 for event in events:
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         self.tree_selected_index = i
+                        self.test_tree_second = str(tree.rect) + ' ' + str(scaled_tree_rect)
+                        self.test_tree_selected_index_second = str(i) + ' ' + tree.name + ' Размер: ' + str(tree.size)
 
         # Дом
         if house.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
@@ -266,6 +341,16 @@ class CameraGroup(pygame.sprite.Group):
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         house.mouse_selected = True
 
+        # Золотая шахта
+        if house_gold_mine.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
+                                (mouse[1] + self.offset[1])):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+            if not house_gold_mine.mouse_selected:
+                for event in events:
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        house_gold_mine.mouse_selected = True
+
         # Рабочий
         if worker.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
                                     (mouse[1] + self.offset[1])):
@@ -274,6 +359,15 @@ class CameraGroup(pygame.sprite.Group):
                     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         worker.mouse_selected = True
+
+        # Шахтер золота
+        if worker_gold_miner.rect.collidepoint((mouse[0] + self.offset[0]),  # * self.zoom_scale
+                                    (mouse[1] + self.offset[1])):
+            if not worker_gold_miner.mouse_selected:
+                for event in events:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        worker_gold_miner.mouse_selected = True
 
         self.internal_surf.fill('#71ddee')
 
@@ -285,7 +379,12 @@ class CameraGroup(pygame.sprite.Group):
         # active elements
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset_pos = sprite.rect.topleft - self.offset + self.internal_offset
-            self.internal_surf.blit(sprite.image, offset_pos)
+
+            if hasattr(sprite, 'visible'):
+                if sprite.visible:
+                    self.internal_surf.blit(sprite.image, offset_pos)
+            else:
+                self.internal_surf.blit(sprite.image, offset_pos)
 
         if self.zoom_scale < 0:
             self.zoom_scale = 0.01
