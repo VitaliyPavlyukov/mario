@@ -20,9 +20,9 @@ class House(pygame.sprite.Sprite):
 	def transform(self):
 		self.image = pygame.transform.scale(self.image, (50, 50))
 
-	def clip(self, surface, x, y, x_size, y_size):  # Get a part of the image
-		handle_surface = surface.copy()  # Sprite that will get process later
-		clipRect = pygame.Rect(x, y, x_size, y_size)  # Part of the image
-		handle_surface.set_clip(clipRect)  # Clip or you can call cropped
-		image = surface.subsurface(handle_surface.get_clip())  # Get subsurface
-		return image.copy()  # Return
+	def clip(self, surface, x, y, x_size, y_size):
+		handle_surface = surface.copy()
+		clipRect = pygame.Rect(x, y, x_size, y_size)
+		handle_surface.set_clip(clipRect)
+		image = surface.subsurface(handle_surface.get_clip())
+		return image.copy()
