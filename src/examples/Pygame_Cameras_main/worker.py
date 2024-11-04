@@ -31,13 +31,9 @@ class Worker(pygame.sprite.Sprite):
     def get_images(self, type, base_path, pos):
         if type:
             if type == 'GoldMiner':
-                for i in range(5):
+                for i in range(0, 5):
                     p_image = pygame.image.load(os.path.join(base_path, 'graphics/gold-miner.png')).convert_alpha()
                     p_image = self.clip(p_image, 150 + (i * 200), 0, 210, 350)
-                    #transparent_surface = pygame.Surface((210, 350), pygame.SRCALPHA)
-                    #transparent_surface.blit(self.image, (0, 0))
-                    #self.image = transparent_surface
-
                     p_image = pygame.transform.scale(p_image, (80, 130))
                     p_image.set_colorkey((255, 255, 255))
                     self.images.append(p_image)
