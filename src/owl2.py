@@ -17,7 +17,7 @@ class Owl2(pygame.sprite.Sprite):
         self.frame_images = []
 
         for i in range(0, 10):
-            image_loaded = pygame.image.load(f"images\\ezgif-1-cdd76a59ca-gif-im\\frame_0{str(i)}_delay-0.04s.gif")
+            image_loaded = pygame.image.load(f"images/ezgif-1-cdd76a59ca-gif-im/frame_0{str(i)}_delay-0.04s.gif")
             #image_one = clip(self.my_image, 1500*i, 100, 1350, 1600)
             scaled_image = pygame.transform.scale(image_loaded, (200, 200))
             scaled_image.set_colorkey(self.back_color)

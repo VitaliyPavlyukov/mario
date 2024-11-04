@@ -13,7 +13,7 @@ def clip(surface, x, y, x_size, y_size): #Get a part of the image
 class Mario(pygame.sprite.Sprite):
     def __init__(self, screen):
         super(Mario, self).__init__()
-        self.my_image = pygame.image.load("images\\Custom Edited - Mario Customs - Mario Dexters Laboratory Robot Rampage-Style.png")
+        self.my_image = pygame.image.load("images/Custom Edited - Mario Customs - Mario Dexters Laboratory Robot Rampage-Style.png")
         self.back_color = (147, 187, 236)
         self.frame_images = []
         self.screen = screen

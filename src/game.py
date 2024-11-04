@@ -3,7 +3,7 @@ import pygame
 from mario_game import MarioGame
 from examples.Pygame_Cameras_main.camera import CameraGame
 import sys
-#sys.path.append('examples\\Pygame_Cameras_main')
+#sys.path.append('examples/Pygame_Cameras_main')
 from button import Button
 
 
@@ -15,7 +15,7 @@ class Game:
 
         self.mario_game = MarioGame(self.screen)
         self.marioGame_running_flag = False
-        self.сamera_game = CameraGame(self.screen, base_path='examples\\Pygame_Cameras_main')
+        self.сamera_game = CameraGame(self.screen, base_path='examples/Pygame_Cameras_main')
         self.сamera_game_running_flag = False
 
         self.font = pygame.font.Font(None, 32)

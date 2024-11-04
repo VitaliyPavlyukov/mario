@@ -143,7 +143,7 @@ class MarioGame:
 
     def load_photo(self):
         """ Загрузка тестового фото """
-        self.photo = pygame.image.load("images\\DSC_2998.jpg")
+        self.photo = pygame.image.load("images/DSC_2998.jpg")
         self.photo = pygame.transform.scale(self.photo, (500, 300))
 
     def draw_photo(self, screen):
@@ -176,10 +176,10 @@ class MarioGame:
         """ Фон """
         self.backgrounds = []
         back_images = [
-            "images\\1700119323_pictures-pibig-info-p-multyashnaya-polyanka-pinterest-27.jpg",
-            "images\\1683363757_furman-top-p-fon-polyanka-instagram-27.jpg",
-            "images\\1684547321_polinka-top-p-multyashnaya-polyanka-kartinka-krasivo-35.jpg",
-            "images\\1678084637_bogatyr-club-p-ramka-gribi-foni-oboi-50.jpg"
+            "images/1700119323_pictures-pibig-info-p-multyashnaya-polyanka-pinterest-27.jpg",
+            "images/1683363757_furman-top-p-fon-polyanka-instagram-27.jpg",
+            "images/1684547321_polinka-top-p-multyashnaya-polyanka-kartinka-krasivo-35.jpg",
+            "images/1678084637_bogatyr-club-p-ramka-gribi-foni-oboi-50.jpg"
         ]
 
         for image in back_images:

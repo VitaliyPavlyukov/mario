@@ -11,7 +11,7 @@ def clip(surface, x, y, x_size, y_size): #Get a part of the image
 class Owl(pygame.sprite.Sprite):
     def __init__(self, screen):
         super(Owl, self).__init__()
-        self.my_image = pygame.image.load("images\\1687335158_bogatyr-club-p-tri-sovi-foni-pinterest-52.jpg")
+        self.my_image = pygame.image.load("images/1687335158_bogatyr-club-p-tri-sovi-foni-pinterest-52.jpg")
         self.back_color = (255, 255, 255)
         self.frame_images = []
         # for i in range(0, 4):
