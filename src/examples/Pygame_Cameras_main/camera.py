@@ -22,8 +22,8 @@ class CameraGame:
         # setup
         self.camera_group = CameraGroup(base_path=self.base_path)
         self.player = Player((1000, 1000), self.camera_group, base_path=self.base_path)
-        self.worker = Worker((1000, 1150), self.camera_group, base_path=self.base_path)
-        self.worker_gold_miner = Worker((1000, 1050), self.camera_group, base_path=self.base_path)
+        self.worker = Worker((1000, 1150), self.camera_group, type='Worker', base_path=self.base_path)
+        self.worker_gold_miner = Worker((1000, 1050), self.camera_group, type='GoldMiner', base_path=self.base_path)
 
         self.tree_list = []
         for i in range(20):
@@ -186,6 +186,7 @@ class CameraGame:
             stats = [
                 ('Статистика', ''),
                 ('fps', self.clock.get_fps()),
+                ('test_worker_gold_miner', self.camera_group.test_worker_gold_miner),
                 ('player.rect', self.player.rect),
                 ('camera_group.offset', self.camera_group.offset),
                 ('camera_group.camera_rect', self.camera_group.camera_rect),

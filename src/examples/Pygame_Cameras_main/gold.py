@@ -17,4 +17,4 @@ class Gold(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 50))
 
     def update(self):
-        print('gold update')
+        pass
