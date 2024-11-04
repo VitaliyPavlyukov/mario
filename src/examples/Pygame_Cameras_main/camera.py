@@ -4,6 +4,7 @@ import os
 from random import randint
 from examples.Pygame_Cameras_main.tree import Tree, TreeSmall
 from examples.Pygame_Cameras_main.house import House
+from examples.Pygame_Cameras_main.house_gold_mine import HouseGoldMine
 from examples.Pygame_Cameras_main.player import Player
 from examples.Pygame_Cameras_main.worker import Worker
 from examples.Pygame_Cameras_main.camera_group import CameraGroup
@@ -38,6 +39,7 @@ class CameraGame:
         self.set_active_house = False
 
         self.house = House((640, 1000), self.camera_group, base_path=self.base_path)
+        self.house_gold_mine = HouseGoldMine((1500, 800), self.camera_group, base_path=self.base_path)
 
         self.camera_group.offset = (210, 785)
 
@@ -129,12 +131,14 @@ class CameraGame:
         self.screen.fill('#71ddee')
 
         self.camera_group.update()
-        self.camera_group.custom_draw(events, self.player, self.worker, self.tree_list, self.house)
+        self.camera_group.custom_draw(events, self.player, self.worker, self.tree_list,
+                                      self.house, self.house_gold_mine)
 
         # Панель управления
+        w, display_height = pygame.display.get_surface().get_size()
         BLACK = (0, 0, 0)
-        panel_surf = pygame.Surface((400, 800))
-        pygame.draw.rect(panel_surf, BLACK, pygame.Rect(0, 0, 400, 800))
+        panel_surf = pygame.Surface((400, display_height))
+        pygame.draw.rect(panel_surf, BLACK, pygame.Rect(0, 0, 400, display_height))
 
         p_selected_object = self.get_selected_objects()
         stats = []
@@ -147,8 +151,8 @@ class CameraGame:
                 ('Собрано деревьев в доме', self.house.done_tree_count),
                 ('Новое дерево', self.panel_tree_small.rect)
             ]
-            if self.panel_tree_small_selected:
-                stats.append(('Выбрано дерево', self.panel_tree_small_selected))
+            # if self.panel_tree_small_selected:
+            #     stats.append(('Выбрано дерево', self.panel_tree_small_selected))
             self.panel_tree_small.rect.x = 100
             self.panel_tree_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
             panel_surf.blit(self.panel_tree_small.image, self.panel_tree_small.rect)

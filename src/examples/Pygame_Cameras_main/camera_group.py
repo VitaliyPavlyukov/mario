@@ -193,7 +193,7 @@ class CameraGroup(pygame.sprite.Group):
 
         return p_min_tree
 
-    def custom_draw(self, events, player, worker, tree_list, house):
+    def custom_draw(self, events, player, worker, tree_list, house, house_gold_mine):
 
         # self.center_target_camera(player)
         # self.box_target_camera(player)

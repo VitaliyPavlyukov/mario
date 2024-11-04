@@ -10,7 +10,7 @@ from button import Button
 class Game:
     def __init__(self):
         self.init()
-        self.window_size = (1600, 800)
+        self.window_size = (1200, 800)
         self.screen = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
 
         self.mario_game = MarioGame(self.screen)
