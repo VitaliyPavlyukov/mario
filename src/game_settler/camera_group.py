@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 from random import randint
-from examples.Pygame_Cameras_main.gold import Gold
+from game_settler.gold import Gold
 
 
 class CameraGroup(pygame.sprite.Group):
