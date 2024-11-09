@@ -5,7 +5,7 @@ from random import randint
 from examples.Pygame_Cameras_main.tree import Tree, TreeSmall
 from examples.Pygame_Cameras_main.gold import Gold
 from examples.Pygame_Cameras_main.house import House
-from examples.Pygame_Cameras_main.house_gold_mine import HouseGoldMine
+from examples.Pygame_Cameras_main.house_gold_mine import HouseGoldMine, HouseGoldMineSmall
 from examples.Pygame_Cameras_main.player import Player
 from examples.Pygame_Cameras_main.worker import Worker
 from examples.Pygame_Cameras_main.camera_group import CameraGroup
@@ -19,7 +19,7 @@ class CameraGame:
         self.base_path = base_path
         self.font = pygame.font.Font(None, 24)
 
-        # setup
+        # Объявление объектов
         self.camera_group = CameraGroup(base_path=self.base_path)
         self.player = Player((1000, 1000), self.camera_group, base_path=self.base_path)
         self.worker = Worker((1000, 1150), self.camera_group, type='Worker', base_path=self.base_path)
@@ -40,19 +40,36 @@ class CameraGame:
         self.panel_tree_small_new = TreeSmall((10, 10), base_path=self.base_path)
         self.panel_tree_small_new.transform()
         self.panel_tree_small_selected = None
+
+        self.panel_house_gold_mine_small = HouseGoldMineSmall((10, 10), base_path=self.base_path)
+        self.panel_house_gold_mine_small.transform()
+        self.panel_house_gold_mine_small_new = HouseGoldMineSmall((10, 10), base_path=self.base_path)
+        self.panel_house_gold_mine_small_new.transform()
+        self.panel_house_gold_mine_small_selected = None
+
         self.stat_common_selected = True
         self.set_active_house = False
 
         self.house = House((640, 1000), self.camera_group, base_path=self.base_path)
-        self.house_gold_mine = HouseGoldMine((1500, 800), self.camera_group, base_path=self.base_path)
+        self.house_gold_mine_list = []
+        self.house_gold_mine_list.append(HouseGoldMine((1500, 900), self.camera_group, base_path=self.base_path))
 
         self.camera_group.offset = (210, 785)
+
+    def get_house_gold_mine(self):
+        return self.house_gold_mine_list[0]
 
     def add_tree(self, tree_small):
         tree = Tree((tree_small.rect.x + self.camera_group.offset[0],
                      tree_small.rect.y + self.camera_group.offset[1]),
                     self.camera_group, base_path=self.base_path)
         self.tree_list.append(tree)
+
+    def add_house_gold_mine(self, house_gold_mine_small):
+        house_gold_mine = HouseGoldMine((house_gold_mine_small.rect.x + self.camera_group.offset[0],
+                     house_gold_mine_small.rect.y + self.camera_group.offset[1]),
+                    self.camera_group, base_path=self.base_path)
+        self.house_gold_mine_list.append(house_gold_mine)
 
     def set_running(self, value):
         self.running = value
@@ -64,7 +81,9 @@ class CameraGame:
 
     def select_objects(self, value):
         self.house.mouse_selected = value
-        self.house_gold_mine.mouse_selected = value
+
+        for house in self.house_gold_mine_list:
+            house.mouse_selected = value
         self.worker.mouse_selected = value
         self.worker_gold_miner.mouse_selected = value
 
@@ -75,8 +94,9 @@ class CameraGame:
         if self.house.mouse_selected:
             return 'house'
 
-        if self.house_gold_mine.mouse_selected:
-            return 'house_gold_mine'
+        for house in self.house_gold_mine_list:
+            if house.mouse_selected:
+                return 'house_gold_mine'
 
         if self.worker.mouse_selected:
             return 'worker'
@@ -95,6 +115,8 @@ class CameraGame:
     def get_selected_new_objects(self):
         if self.panel_tree_small_selected:
             return 'new tree'
+        elif self.panel_house_gold_mine_small_selected:
+            return 'new house_gold_mine'
 
         return None
 
@@ -128,10 +150,17 @@ class CameraGame:
                     # Оставляем объект
                     self.add_tree(self.panel_tree_small_new)
                     self.set_active_house = True
+                elif self.panel_house_gold_mine_small_selected:
+                    self.panel_house_gold_mine_small_selected = False
+                    # Оставляем объект
+                    self.add_house_gold_mine(self.panel_house_gold_mine_small_new)
+                    self.set_active_house = True
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.panel_tree_small.rect.collidepoint(mouse[0], mouse[1]):
                     self.panel_tree_small_selected = True
+                elif self.panel_house_gold_mine_small.rect.collidepoint(mouse[0], mouse[1]):
+                    self.panel_house_gold_mine_small_selected = True
 
             # Если нажали мышкой на экране и не выбрали ни одного объекта
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -146,7 +175,7 @@ class CameraGame:
 
         self.camera_group.update()
         self.camera_group.custom_draw(events, self.player, self.worker, self.tree_list,
-                                      self.house, self.house_gold_mine, self.worker_gold_miner,
+                                      self.house, self.house_gold_mine_list, self.worker_gold_miner,
                                       self.gold)
 
         # Панель управления
@@ -171,10 +200,14 @@ class CameraGame:
             self.panel_tree_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
             panel_surf.blit(self.panel_tree_small.image, self.panel_tree_small.rect)
 
+            self.panel_house_gold_mine_small.rect.x = 200
+            self.panel_house_gold_mine_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
+            panel_surf.blit(self.panel_house_gold_mine_small.image, self.panel_house_gold_mine_small.rect)
+
         elif p_selected_object == 'house_gold_mine':
             stats = [
                 ('Золотая шахта', ''),
-                ('Золото в шахте', self.house_gold_mine.gold_count)
+                ('Золото в шахте', self.house_gold_mine_list[self.camera_group.house_gold_mine_selected_index].gold_count)
             ]
 
         elif p_selected_object == 'worker':
@@ -231,6 +264,11 @@ class CameraGame:
             self.panel_tree_small_new.rect.x = mouse[0]
             self.panel_tree_small_new.rect.y = mouse[1]
             self.screen.blit(self.panel_tree_small_new.image, self.panel_tree_small_new.rect)
+
+        elif self.panel_house_gold_mine_small_selected:
+            self.panel_house_gold_mine_small_new.rect.x = mouse[0]
+            self.panel_house_gold_mine_small_new.rect.y = mouse[1]
+            self.screen.blit(self.panel_house_gold_mine_small_new.image, self.panel_house_gold_mine_small_new.rect)
         # else:
         #     # Оставляем объект
         #     self.add_tree(self.panel_tree_small_new)
