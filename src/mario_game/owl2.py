@@ -1,6 +1,7 @@
 import pygame
 import random
 
+
 def clip(surface, x, y, x_size, y_size): #Get a part of the image
     handle_surface = surface.copy() #Sprite that will get process later
     clipRect = pygame.Rect(x,y,x_size,y_size) #Part of the image
@@ -8,46 +9,21 @@ def clip(surface, x, y, x_size, y_size): #Get a part of the image
     image = surface.subsurface(handle_surface.get_clip()) #Get subsurface
     return image.copy() #Return
 
-class Owl(pygame.sprite.Sprite):
+
+class Owl2(pygame.sprite.Sprite):
     def __init__(self, screen):
-        super(Owl, self).__init__()
-        self.my_image = pygame.image.load("images/1687335158_bogatyr-club-p-tri-sovi-foni-pinterest-52.jpg")
+        super(Owl2, self).__init__()
+        #self.my_image = pygame.image.load("1687335158_bogatyr-club-p-tri-sovi-foni-pinterest-52.jpg")
         self.back_color = (255, 255, 255)
         self.frame_images = []
-        # for i in range(0, 4):
-        #     image_one = clip(self.my_image, 1500*i, 100, 1350, 1600)
-        #     scaled_image = pygame.transform.scale(image_one, (160, 200))
-        #     scaled_image.set_colorkey(self.back_color)
-        #     self.frame_images.append(scaled_image)
 
-        #self.my_image_6_1 = clip(self.my_image, 100, 100, 1350, 1600)
-        self.my_image_6_1 = clip(self.my_image, 1400, 150, 1700, 1600)
-        self.my_image_6_1 = pygame.transform.scale(self.my_image_6_1, (190, 200))
-        self.my_image_6_1.set_colorkey(self.back_color)
-
-        # 0
-        one_image = clip(self.my_image, 100, 100, 1350, 1600)
-        one_image = pygame.transform.scale(one_image, (150, 200))
-        one_image.set_colorkey(self.back_color)
-        self.frame_images.append(one_image)
-
-        # 1
-        one_image = clip(self.my_image, 1400, 150, 1700, 1600)
-        one_image = pygame.transform.scale(one_image, (190, 200))
-        one_image.set_colorkey(self.back_color)
-        self.frame_images.append(one_image)
-
-        # 2
-        one_image = clip(self.my_image, 3100, 150, 1050, 1600)
-        one_image = pygame.transform.scale(one_image, (130, 200))
-        one_image.set_colorkey(self.back_color)
-        self.frame_images.append(one_image)
-
-        # 3
-        one_image = clip(self.my_image, 4200, 150, 2000, 1600)
-        one_image = pygame.transform.scale(one_image, (220, 200))
-        one_image.set_colorkey(self.back_color)
-        self.frame_images.append(one_image)
+        for i in range(0, 10):
+            image_loaded = pygame.image.load(f"mario_game/images/ezgif-1-cdd76a59ca-gif-im/frame_0{str(i)}_delay-0.04s.gif")
+            #image_one = clip(self.my_image, 1500*i, 100, 1350, 1600)
+            scaled_image = pygame.transform.scale(image_loaded, (200, 200))
+            scaled_image.set_colorkey(self.back_color)
+            scaled_image = pygame.transform.flip(scaled_image, True, False)
+            self.frame_images.append(scaled_image)
 
         self.move_left = True
         self.move_right = False
@@ -67,8 +43,8 @@ class Owl(pygame.sprite.Sprite):
 
         self.rect = self.current_frame.get_rect()
         self.surf = self.frame_images[self.current_frame_index]
-        self.rect.move_ip(0, 550)
-        self.rect.top = int(self.window_height * 0.85) - int(self.frame_height / 2)
+        self.rect.move_ip(200, 500)
+        self.rect.top = 200
 
     def animate_state(self, clock):
         # обновление состояния

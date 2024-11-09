@@ -11,12 +11,13 @@ from pygame.locals import (
     RLEACCEL,
 )
 
+
 class Cloud(pygame.sprite.Sprite):
     def __init__(self, screen):
         super(Cloud, self).__init__()
         self.window_height = screen.get_height()
         self.window_width = screen.get_width()
-        self.surf = pygame.image.load("images/cloud.png").convert()
+        self.surf = pygame.image.load("mario_game/images/cloud.png").convert()
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         # The starting position is randomly generated
         self.rect = self.surf.get_rect(

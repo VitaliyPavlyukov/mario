@@ -42,7 +42,7 @@ class Book(pygame.sprite.Sprite):
         self.height = height
         #self.surf = pygame.Surface((self.width, self.height))
         self.surf = pygame.transform.scale(pygame.image.load(
-            "images/1678145837_bogatyr-club-p-bloknot-maket-foni-pinterest-40.png"), (self.width, self.height))
+            "mario_game/images/1678145837_bogatyr-club-p-bloknot-maket-foni-pinterest-40.png"), (self.width, self.height))
         #self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect()
         self.rect.left = (1600 // 2) - (self.width // 2)
@@ -61,7 +61,7 @@ class Book(pygame.sprite.Sprite):
         self.set_page(0)
 
     def load_book_text(self):
-        with open('book/mario.txt', encoding='utf-8') as f:
+        with open('mario_game/book/mario.txt', encoding='utf-8') as f:
             self.book_text = f.read()
 
     def build_pages(self):
