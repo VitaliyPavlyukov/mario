@@ -2,16 +2,16 @@ import pygame
 import sys
 import os
 from random import randint
-from examples.Pygame_Cameras_main.tree import Tree, TreeSmall
-from examples.Pygame_Cameras_main.gold import Gold
-from examples.Pygame_Cameras_main.house import House
-from examples.Pygame_Cameras_main.house_gold_mine import HouseGoldMine, HouseGoldMineSmall
-from examples.Pygame_Cameras_main.player import Player
-from examples.Pygame_Cameras_main.worker import Worker
-from examples.Pygame_Cameras_main.camera_group import CameraGroup
+from game_settler.tree import Tree, TreeSmall
+from game_settler.gold import Gold
+from game_settler.house import House
+from game_settler.house_gold_mine import HouseGoldMine, HouseGoldMineSmall
+from game_settler.player import Player
+from game_settler.worker import Worker
+from game_settler.camera_group import CameraGroup
 
 
-class CameraGame:
+class SettlerGame:
     def __init__(self, screen, clock, base_path):
         self.running = False
         self.screen = screen

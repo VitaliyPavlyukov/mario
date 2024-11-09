@@ -1,9 +1,9 @@
 import os
 import pygame
 from mario_game import MarioGame
-from examples.Pygame_Cameras_main.camera import CameraGame
+from game_settler.main import SettlerGame
 import sys
-#sys.path.append('examples/Pygame_Cameras_main')
+#sys.path.append('examples/game_settler')
 from button import Button
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -23,15 +23,15 @@ class Game:
 
         self.mario_game = MarioGame(self.screen)
         self.marioGame_running_flag = False
-        self.сamera_game = CameraGame(self.screen, self.clock, base_path='examples/Pygame_Cameras_main')
-        self.сamera_game_running_flag = False
+        self.settler_game = SettlerGame(self.screen, self.clock, base_path='game_settler')
+        self.settler_game_running_flag = False
 
         self.font = pygame.font.Font(None, 32)
 
         self.button_mario_start = Button(text='Марио')
         self.button_mario_start.set_init_pos(100, 650)
 
-        self.button_camera_start = Button(text='Камера')
+        self.button_camera_start = Button(text='Поселенцы', width=130)
         self.button_camera_start.set_init_pos(100, 690)
 
         self.screen_color = (50, 50, 50)
@@ -43,12 +43,12 @@ class Game:
 
     def games_stop(self):
         self.marioGame_running_flag = False
-        self.сamera_game_running_flag = False
+        self.settler_game_running_flag = False
 
     def is_games_running(self):
         if self.marioGame_running_flag:
             return True
-        if self.сamera_game_running_flag:
+        if self.settler_game_running_flag:
             return True
 
         return False
@@ -83,7 +83,7 @@ class Game:
                             self.screen = pygame.display.set_mode(self.window_size)
                             fullscreen = False
 
-                if not self.marioGame_running_flag and not self.сamera_game.running:
+                if not self.marioGame_running_flag and not self.settler_game.running:
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             running = False
@@ -99,13 +99,13 @@ class Game:
                     self.screen.fill(self.screen_color)
                 self.marioGame_running_flag = False
 
-            if self.сamera_game.running:
-                self.сamera_game.run(events)
+            if self.settler_game.running:
+                self.settler_game.run(events)
             else:
                 # Переключение один раз
-                if self.сamera_game_running_flag:
+                if self.settler_game_running_flag:
                     self.screen.fill(self.screen_color)
-                self.сamera_game_running_flag = False
+                self.settler_game_running_flag = False
 
             if self.button_mario_start.state == 'clicked':
                 self.mario_game.set_running(True)
@@ -113,8 +113,8 @@ class Game:
                 self.button_mario_start.state = 'normal'
 
             if self.button_camera_start.state == 'clicked':
-                self.сamera_game.set_running(True)
-                self.сamera_game_running_flag = True
+                self.settler_game.set_running(True)
+                self.settler_game_running_flag = True
                 self.button_camera_start.state = 'normal'
 
             # Отрисовка без включенных игр
