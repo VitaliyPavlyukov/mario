@@ -2,8 +2,6 @@ import os
 import pygame
 from mario_game.mario_game import MarioGame
 from game_settler.main import SettlerGame
-import sys
-#sys.path.append('examples/game_settler')
 from mario_game.button import Button
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
