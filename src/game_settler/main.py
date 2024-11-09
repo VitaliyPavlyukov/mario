@@ -2,13 +2,13 @@ import pygame
 import sys
 import os
 from random import randint
-from game_settler.tree import Tree, TreeSmall
-from game_settler.gold import Gold
-from game_settler.house import House
-from game_settler.house_gold_mine import HouseGoldMine, HouseGoldMineSmall
-from game_settler.player import Player
-from game_settler.worker import Worker
-from game_settler.camera_group import CameraGroup
+from .tree import Tree, TreeSmall
+from .gold import Gold
+from .house import House
+from .house_gold_mine import HouseGoldMine, HouseGoldMineSmall
+from .player import Player
+from .worker import Worker
+from .camera_group import CameraGroup
 
 
 class SettlerGame:
