@@ -11,14 +11,14 @@ from pygame.locals import (
     QUIT,
     RLEACCEL,
 )
-from mario import Mario
-from owl import Owl
-from owl2 import Owl2
-from cloud import Cloud
-from button import Button
-from player import Player
-from statistic import Statistic
-from book import Book
+from .mario import Mario
+from .owl import Owl
+from .owl2 import Owl2
+from .cloud import Cloud
+from .button import Button
+from .player import Player
+from .statistic import Statistic
+from .book import Book
 
 
 WHITE = (255, 255, 255)
@@ -56,7 +56,7 @@ class MarioGame:
 
         # pygame.mixer.pre_init(44100, -16, 1, 512)  # важно вызвать до pygame.init()
         # pygame.init()
-        self.sound_collision = pygame.mixer.Sound("sounds/Collision.ogg")
+        self.sound_collision = pygame.mixer.Sound("mario_game/sounds/Collision.ogg")
 
         self.window_size = (self.screen.get_width(), self.screen.get_height())
         pygame.display.set_caption("Марио")
@@ -114,7 +114,7 @@ class MarioGame:
         self.running = value
 
         if self.running:
-            pygame.mixer.music.load('sounds/track_09.mp3')
+            pygame.mixer.music.load('mario_game/sounds/track_09.mp3')
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.5)
         else:
@@ -144,7 +144,7 @@ class MarioGame:
 
     def load_photo(self):
         """ Загрузка тестового фото """
-        self.photo = pygame.image.load("images/DSC_2998.jpg")
+        self.photo = pygame.image.load("mario_game/images/DSC_2998.jpg")
         self.photo = pygame.transform.scale(self.photo, (500, 300))
 
     def draw_photo(self, screen):
@@ -177,10 +177,10 @@ class MarioGame:
         """ Фон """
         self.backgrounds = []
         back_images = [
-            "images/1700119323_pictures-pibig-info-p-multyashnaya-polyanka-pinterest-27.jpg",
-            "images/1683363757_furman-top-p-fon-polyanka-instagram-27.jpg",
-            "images/1684547321_polinka-top-p-multyashnaya-polyanka-kartinka-krasivo-35.jpg",
-            "images/1678084637_bogatyr-club-p-ramka-gribi-foni-oboi-50.jpg"
+            "mario_game/images/1700119323_pictures-pibig-info-p-multyashnaya-polyanka-pinterest-27.jpg",
+            "mario_game/images/1683363757_furman-top-p-fon-polyanka-instagram-27.jpg",
+            "mario_game/images/1684547321_polinka-top-p-multyashnaya-polyanka-kartinka-krasivo-35.jpg",
+            "mario_game/images/1678084637_bogatyr-club-p-ramka-gribi-foni-oboi-50.jpg"
         ]
 
         for image in back_images:
