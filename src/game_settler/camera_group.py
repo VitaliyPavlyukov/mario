@@ -297,7 +297,8 @@ class CameraGroup(pygame.sprite.Group):
                     house.done_gold_count += 1
                     worker_gold_miner.gold_selected = None
                     gold.visible = False
-                    if p_min_house_gold_mine and not p_min_house_gold_mine.visible:
+                    if ((p_min_house_gold_mine and not p_min_house_gold_mine.visible)
+                            or (not p_min_house_gold_mine)):
                         worker_gold_miner.active_move = False
 
                 if worker_gold_miner.rect.center[1] + 5 < house.rect.center[1]:

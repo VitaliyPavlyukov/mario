@@ -53,6 +53,7 @@ class SettlerGame:
         self.house = House((640, 1000), self.camera_group, base_path=self.base_path)
         self.house_gold_mine_list = []
         self.house_gold_mine_list.append(HouseGoldMine((1500, 900), self.camera_group, base_path=self.base_path))
+        self.house_gold_mine_list.append(HouseGoldMine((1800, 900), self.camera_group, base_path=self.base_path))
 
         self.camera_group.offset = (210, 785)
 
