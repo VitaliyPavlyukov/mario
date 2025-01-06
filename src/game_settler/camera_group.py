@@ -286,6 +286,8 @@ class CameraGroup(pygame.sprite.Group):
                 elif worker_gold_miner.rect.center[0] + 5 < p_min_house_gold_mine.rect.center[0]:
                     worker_gold_miner.move('right')
 
+                worker_gold_miner.active_move = True
+
         # Идет от шахты к дому
         if worker_gold_miner.gold_selected:
             gold.rect.center = worker_gold_miner.rect.center
