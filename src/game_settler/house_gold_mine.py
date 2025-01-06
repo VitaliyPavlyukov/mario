@@ -15,8 +15,8 @@ class HouseGoldMine(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect(center=self.default_rect_center)
 		self.visible = True
 		self.size = 1
-		self.max_gold_count = 2
-		self.gold_count = 2
+		self.max_gold_count = 10
+		self.gold_count = 10
 		self.done_tree_count = 0
 		self.done = 0
 		self.mouse_selected = False
