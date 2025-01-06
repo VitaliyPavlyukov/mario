@@ -264,6 +264,7 @@ class CameraGroup(pygame.sprite.Group):
         # Идет от дома к шахте если в ней есть золото
         p_min_house_gold_mine = self.get_min_object(worker, house_gold_mine_list)
         if p_min_house_gold_mine:
+            # Если у шахтера нет золота, а шахта существует
             if not worker_gold_miner.gold_selected and p_min_house_gold_mine.visible:
                 gold.visible = False
 
@@ -274,6 +275,7 @@ class CameraGroup(pygame.sprite.Group):
                     p_min_house_gold_mine.check_visible()
 
                 self.test_worker_gold_miner = worker_gold_miner.rect.center
+
                 if worker_gold_miner.rect.center[1] + 5 < p_min_house_gold_mine.rect.center[1]:
                     worker_gold_miner.move('down')
                 elif worker_gold_miner.rect.center[1] >= p_min_house_gold_mine.rect.center[1]:
@@ -284,32 +286,33 @@ class CameraGroup(pygame.sprite.Group):
                 elif worker_gold_miner.rect.center[0] + 5 < p_min_house_gold_mine.rect.center[0]:
                     worker_gold_miner.move('right')
 
-            # Идет от шахты к дому
-            elif worker_gold_miner.gold_selected:
+        # Идет от шахты к дому
+        if worker_gold_miner.gold_selected:
+            gold.rect.center = worker_gold_miner.rect.center
+            gold.visible = True
 
-                gold.rect.center = worker_gold_miner.rect.center
-                gold.visible = True
+            # Шахтер в доме
+            if not worker_gold_miner.has_pause():
+                if house.rect.collidepoint((worker_gold_miner.rect.center[0], worker_gold_miner.rect.center[1])):
+                    house.done_gold_count += 1
+                    worker_gold_miner.gold_selected = None
+                    gold.visible = False
+                    if p_min_house_gold_mine and not p_min_house_gold_mine.visible:
+                        worker_gold_miner.active_move = False
 
-                if not worker_gold_miner.has_pause():
-                    if house.rect.collidepoint((worker_gold_miner.rect.center[0], worker_gold_miner.rect.center[1])):
-                        house.done_gold_count += 1
-                        worker_gold_miner.gold_selected = None
-                        gold.visible = False
-                        if not p_min_house_gold_mine.visible:
-                            worker_gold_miner.active_move = False
+                if worker_gold_miner.rect.center[1] + 5 < house.rect.center[1]:
+                    worker_gold_miner.move('down')
+                elif worker_gold_miner.rect.center[1] >= house.rect.center[1]:
+                    worker_gold_miner.move('up')
 
-                    if worker_gold_miner.rect.center[1] + 5 < house.rect.center[1]:
-                        worker_gold_miner.move('down')
-                    elif worker_gold_miner.rect.center[1] >= house.rect.center[1]:
-                        worker_gold_miner.move('up')
+                if worker_gold_miner.rect.center[0] >= house.rect.center[0]:
+                    worker_gold_miner.move('left')
+                elif worker_gold_miner.rect.center[0] + 5 < house.rect.center[0]:
+                    worker_gold_miner.move('right')
+            else:
+                worker_gold_miner.move('stop')
 
-                    if worker_gold_miner.rect.center[0] >= house.rect.center[0]:
-                        worker_gold_miner.move('left')
-                    elif worker_gold_miner.rect.center[0] + 5 < house.rect.center[0]:
-                        worker_gold_miner.move('right')
-                else:
-                    worker_gold_miner.move('stop')
-
+        # Выбор объектов мышкой
         mouse = pygame.mouse.get_pos()
 
         for i, tree in enumerate(tree_list):
