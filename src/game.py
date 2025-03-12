@@ -6,7 +6,6 @@ from mario_game.button import Button
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-
 class Game:
     def __init__(self):
         self.init()
