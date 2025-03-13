@@ -6,6 +6,7 @@ from mario_game.button import Button
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
+
 class Game:
     def __init__(self):
         self.init()
@@ -61,7 +62,6 @@ class Game:
         running = True
         while running:
 
-            mouse = pygame.mouse.get_pos()
             events = pygame.event.get()
 
             for event in events:
@@ -85,9 +85,6 @@ class Game:
                         if event.key == pygame.K_ESCAPE:
                             running = False
 
-                self.button_mario_start.update_event(event, mouse)
-                self.button_camera_start.update_event(event, mouse)
-
             if self.mario_game.running:
                 self.mario_game.run(events)
             else:
@@ -104,23 +101,20 @@ class Game:
                     self.screen.fill(self.screen_color)
                 self.settler_game_running_flag = False
 
-            if self.button_mario_start.state == 'clicked':
+            if self.button_mario_start.clicked():
                 self.mario_game.set_running(True)
                 self.marioGame_running_flag = True
-                self.button_mario_start.state = 'normal'
+                self.button_mario_start.set_not_clicked()
 
-            if self.button_camera_start.state == 'clicked':
+            if self.button_camera_start.clicked():
                 self.settler_game.set_running(True)
                 self.settler_game_running_flag = True
-                self.button_camera_start.state = 'normal'
+                self.button_camera_start.set_not_clicked()
 
             # Отрисовка без включенных игр
             if not self.is_games_running():
-                self.screen.blit(self.button_mario_start.surf, self.button_mario_start.rect)
-                self.screen.blit(self.button_mario_start.surf_text, self.button_mario_start.rect_text)
-
-                self.screen.blit(self.button_camera_start.surf, self.button_camera_start.rect)
-                self.screen.blit(self.button_camera_start.surf_text, self.button_camera_start.rect_text)
+                self.button_mario_start.draw(self.screen, events)
+                self.button_camera_start.draw(self.screen, events)
 
             pygame.display.flip()
             self.clock.tick(60)

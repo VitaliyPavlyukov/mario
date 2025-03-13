@@ -1,16 +1,18 @@
 import pygame
-from random import randint
+from elements.curcles import Circles
+from elements.alphs import Alphs
 
-def get_int_parts(value:int, step:int):
-    """ Разбиение числа на равные части"""
-
-    parts = []
-    part = value // step
-    for i in range(step):
-        parts.append(part * i)
-
-    return parts
-
+"""
+    pygame.draw.rect(surface, …) – прямоугольник;
+    pygame.draw.line(surface, …) – линия;
+    pygame.draw.aaline(surface, …) – сглаженная линия;
+    pygame.draw.lines(surface, …) – ломаная линия;
+    pygame.draw.aalines(surface, …) – ломаная сглаженная линия;
+    pygame.draw.polygon(surface, …) – полигон;
+    pygame.draw.circle(surface, …) – круг;
+    pygame.draw.ellipse(surface, …) – эллипс;
+    pygame.draw.arc(surface, …) – дуга. 
+"""
 
 pygame.init()
 
@@ -36,15 +38,11 @@ GREEN_2 = (0, 225, 0)
 COLORS = [WHITE, BLUE, GREEN, RED,
           GRAY, LIGHT_BLUE, YELLOW, PINK, GREEN_2]
 
-COLORS_states = []
-COLORS_states_list = []
-
-ALPH = ['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'к', 'л', 'м', 'н',
-        'о', 'п', 'р', 'с', 'т']
-ALPH_states = []
+circles = Circles(x_pos=50, y_pos=500, radius=40)
+alphs = Alphs(x_pos=10, y_pos=800)
 
 current_frame_index = 0
-font = pygame.font.Font(None, 24)
+font = pygame.font.Font(None, size=24)
 
 while True:
     for event in pygame.event.get():
@@ -73,43 +71,10 @@ while True:
     pygame.draw.circle(sc, BLUE, (300, 250), 40)
 
     # Массив кругов разных цветов
-    fps_parts = get_int_parts(value=FPS, step=4)
-    lines_count = 3
-    circle_count = 10
-
-    if current_frame_index in fps_parts:
-        COLORS_states_list = []
-
-    for x in range(lines_count):
-        if len(COLORS_states) == 0:
-            for i in range(circle_count):
-                COLORS_states.append(COLORS[randint(0, len(COLORS) - 1)])
-
-        if current_frame_index in fps_parts:
-            COLORS_states = []
-            for i in range(circle_count):
-                COLORS_states.append(COLORS[randint(0, len(COLORS) - 1)])
-
-        COLORS_states_list.append(COLORS_states)
-
-    for k in range(lines_count):
-        for i in range(circle_count):
-            pygame.draw.circle(sc, COLORS_states_list[k][i], (50 + (i * 100), 500 + 100 * k), 40)
+    circles.draw(sc, FPS, current_frame_index, 3, 10)
 
     # Массив букв
-    alph_count = 20
-    if len(ALPH_states) == 0:
-        for i in range(alph_count):
-            ALPH_states.append(ALPH[randint(0, len(ALPH) - 1)])
-
-    if current_frame_index == 0:
-        ALPH_states = []
-        for i in range(alph_count):
-            ALPH_states.append(ALPH[randint(0, len(ALPH) - 1)])
-
-    for i in range(alph_count):
-        surf_text = font.render(str(ALPH_states[i]), True, (255, 255, 255))
-        sc.blit(surf_text, (10 + i * 50, 800))
+    alphs.draw(sc, current_frame_index, 20)
 
     pygame.draw.ellipse(sc, BLUE, (300, 300, 100, 50), 1)
 
@@ -119,16 +84,3 @@ while True:
     pygame.display.update()
 
     clock.tick(FPS)
-
-
-"""
-    pygame.draw.rect(surface, …) – прямоугольник;
-    pygame.draw.line(surface, …) – линия;
-    pygame.draw.aaline(surface, …) – сглаженная линия;
-    pygame.draw.lines(surface, …) – ломаная линия;
-    pygame.draw.aalines(surface, …) – ломаная сглаженная линия;
-    pygame.draw.polygon(surface, …) – полигон;
-    pygame.draw.circle(surface, …) – круг;
-    pygame.draw.ellipse(surface, …) – эллипс;
-    pygame.draw.arc(surface, …) – дуга. 
-"""
