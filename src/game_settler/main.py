@@ -283,10 +283,13 @@ class SettlerGame:
 
         self.screen.fill('#71ddee')
 
+        # Обновление объектов
         self.camera_group.update()
-        self.camera_group.custom_draw(events, self.player, self.worker, self.tree_list,
-                                      self.house, self.house_gold_mine_list, self.worker_gold_miner,
-                                      self.gold)
+        self.camera_group.house_gold_mine_update(mouse, events, self.house_gold_mine_list)
+        self.camera_group.gold_miner_update(mouse, events, self.worker_gold_miner, self.gold, self.house, self.worker,
+                                            self.house_gold_mine_list)
+        self.camera_group.worker_update(events, self.house, self.player, self.worker, self.tree_list)
+        self.camera_group.custom_draw()
 
         panel_surf = self.contol_panel(mouse)
 
