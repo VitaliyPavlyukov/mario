@@ -291,6 +291,6 @@ class SettlerGame:
         self.camera_group.worker_update(events, self.house, self.player, self.worker, self.tree_list)
         self.camera_group.custom_draw()
 
+        # Контрольная панель
         panel_surf = self.contol_panel(mouse)
-
         self.screen.blit(panel_surf, (0, 0))
