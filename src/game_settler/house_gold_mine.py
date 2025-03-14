@@ -6,13 +6,13 @@ class HouseGoldMine(pygame.sprite.Sprite):
 	""" Золотая шахта """
 	def __init__(self, pos, group, base_path=''):
 		super().__init__(group)
+		self.name = 'Золотая шахта'
 		self.image = pygame.image.load(os.path.join(base_path, 'graphics/zolotaja_shakhta.png')).convert_alpha()
 		self.max_width = 308
 		self.max_height = 326
 		self.image = pygame.transform.scale(self.image, (self.max_width, self.max_height))
 		self.default_rect_center = pos
 		self.rect = self.image.get_rect(center=self.default_rect_center)
-		self.name = 'Золотая шахта'
 		self.visible = True
 		self.size = 1
 		self.max_gold_count = 10
@@ -49,13 +49,13 @@ class HouseGoldMineSmall(pygame.sprite.Sprite):
 	""" Золотая шахта """
 	def __init__(self, pos, base_path=''):
 		super().__init__()
+		self.name = 'Золотая шахта'
 		self.image = pygame.image.load(os.path.join(base_path, 'graphics/zolotaja_shakhta.png')).convert_alpha()
 		self.max_width = 308
 		self.max_height = 326
 		self.image = pygame.transform.scale(self.image, (self.max_width, self.max_height))
 		self.default_rect_center = pos
 		self.rect = self.image.get_rect(center=self.default_rect_center)
-		self.name = 'Золотая шахта'
 		self.visible = True
 		self.size = 1
 		self.mouse_selected = False

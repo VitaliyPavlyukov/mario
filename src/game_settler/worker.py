@@ -90,7 +90,10 @@ class Worker(pygame.sprite.Sprite):
             self.direction.x = 0
 
     def update(self):
-        # self.input()
+        """ Обновление состояния объекта """
+        if not self.active_move and self.image_index != 0:
+            self.image_index = 0
+
         if self.direction != 1:
             self.rect.center += self.direction * self.speed
         self.direction.x = 0
@@ -98,7 +101,7 @@ class Worker(pygame.sprite.Sprite):
 
         if len(self.images) > 0 and self.active_move:
             now = datetime.datetime.now()
-            if self.set_image_pause():
+            if self._set_image_pause():
                 if self.image_index < len(self.images):
                     self.image = self.images[self.image_index]
                     self.image_index += 1
@@ -106,7 +109,7 @@ class Worker(pygame.sprite.Sprite):
                     self.image = self.images[0]
                     self.image_index = 0
 
-    def set_image_pause(self):
+    def _set_image_pause(self):
         now = datetime.datetime.now()
         if (now - self.image_change_prev_time).total_seconds()*1000 >= 100:
             self.image_change_prev_time = now

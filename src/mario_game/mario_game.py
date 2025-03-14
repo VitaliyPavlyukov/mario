@@ -210,14 +210,6 @@ class MarioGame:
                 self.default(self.screen)
                 self.mario.set_screen(self.screen)
 
-            self.button_start.update_event(event, mouse)
-            self.button_jump.update_event(event, mouse)
-            self.button_stop.update_event(event, mouse)
-            self.button_book_show.update_event(event, mouse)
-            self.button_book_exit.update_event(event, mouse)
-            self.button_book_left.update_event(event, mouse)
-            self.button_book_right.update_event(event, mouse)
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.mario.rect.top -= 200
@@ -239,40 +231,40 @@ class MarioGame:
                 self.clouds.add(new_cloud)
                 self.all_sprites.add(new_cloud)
 
-        if self.button_start.state == 'clicked':
+        if self.button_start.clicked():
             self.mario.stop = False
             self.mario.rect.top = 0
             self.mario.rect.left = 0
-            self.button_start.state = 'normal'
+            self.button_start.set_not_clicked()
 
-        if self.button_jump.state == 'clicked':
+        if self.button_jump.clicked():
             self.mario.stop = False
             self.mario.rect.top -= 200
-            self.button_jump.state = 'normal'
+            self.button_jump.set_not_clicked()
 
-        if self.button_stop.state == 'clicked':
+        if self.button_stop.clicked():
             if self.mario.stop:
                 self.mario.stop = False
             else:
                 self.mario.stop = True
-            self.button_stop.state = 'normal'
+            self.button_stop.set_not_clicked()
 
-        if self.button_book_show.state == 'clicked':
+        if self.button_book_show.clicked():
             self.book.show = True
-            self.button_book_show.state = 'normal'
+            self.button_book_show.set_not_clicked()
 
-        if self.button_book_exit.state == 'clicked':
+        if self.button_book_exit.clicked():
             self.book.show = False
-            self.button_book_exit.state = 'normal'
+            self.button_book_exit.set_not_clicked()
 
-        if self.button_book_right.state == 'clicked':
+        if self.button_book_right.clicked():
             self.book.set_page(self.book.current_page_index + 1)
-            self.button_book_right.state = 'normal'
+            self.button_book_right.set_not_clicked()
             self.button_book_page_num.set_text(str(self.book.current_page_index + 1))
 
-        if self.button_book_left.state == 'clicked':
+        if self.button_book_left.clicked():
             self.book.set_page(self.book.current_page_index - 1)
-            self.button_book_left.state = 'normal'
+            self.button_book_left.set_not_clicked()
             self.button_book_page_num.set_text(str(self.book.current_page_index + 1))
 
         self.clouds.update()
@@ -331,14 +323,10 @@ class MarioGame:
         self.screen.blit(self.statistic.surf, self.statistic.rect)
         self.screen.blit(self.statistic.text, self.statistic.place)
 
-        self.screen.blit(self.button_start.surf, self.button_start.rect)
-        self.screen.blit(self.button_start.surf_text, self.button_start.rect_text)
-        self.screen.blit(self.button_jump.surf, self.button_jump.rect)
-        self.screen.blit(self.button_jump.surf_text, self.button_jump.rect_text)
-        self.screen.blit(self.button_stop.surf, self.button_stop.rect)
-        self.screen.blit(self.button_stop.surf_text, self.button_stop.rect_text)
-        self.screen.blit(self.button_book_show.surf, self.button_book_show.rect)
-        self.screen.blit(self.button_book_show.surf_text, self.button_book_show.rect_text)
+        self.button_start.draw(self.screen, events)
+        self.button_jump.draw(self.screen, events)
+        self.button_stop.draw(self.screen, events)
+        self.button_book_show.draw(self.screen, events)
 
         for text, number_rect in self.number_rects:
             self.screen.blit(text, number_rect)
@@ -366,17 +354,10 @@ class MarioGame:
                 surf_text = font.render(line, True, (0, 0, 0))
                 self.screen.blit(surf_text, (self.book.rect.left + 50, self.book.rect.top + 100 + (50 * i)))
 
-            self.screen.blit(self.button_book_right.surf, self.button_book_right.rect)
-            self.screen.blit(self.button_book_right.surf_text, self.button_book_right.rect_text)
-
-            self.screen.blit(self.button_book_page_num.surf, self.button_book_page_num.rect)
-            self.screen.blit(self.button_book_page_num.surf_text, self.button_book_page_num.rect_text)
-
-            self.screen.blit(self.button_book_left.surf, self.button_book_left.rect)
-            self.screen.blit(self.button_book_left.surf_text, self.button_book_left.rect_text)
-
-            self.screen.blit(self.button_book_exit.surf, self.button_book_exit.rect)
-            self.screen.blit(self.button_book_exit.surf_text, self.button_book_exit.rect_text)
+            self.button_book_right.draw(self.screen, events)
+            self.button_book_page_num.draw(self.screen, events)
+            self.button_book_left.draw(self.screen, events)
+            self.button_book_exit.draw(self.screen, events)
 
         #pygame.display.flip()
 

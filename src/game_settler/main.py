@@ -2,13 +2,13 @@ import pygame
 import sys
 import os
 from random import randint
-from game_settler.tree import Tree, TreeSmall
-from game_settler.gold import Gold
-from game_settler.house import House
-from game_settler.house_gold_mine import HouseGoldMine, HouseGoldMineSmall
-from game_settler.player import Player
-from game_settler.worker import Worker
-from game_settler.camera_group import CameraGroup
+from .tree import Tree, TreeSmall
+from .gold import Gold
+from .house import House
+from .house_gold_mine import HouseGoldMine, HouseGoldMineSmall
+from .player import Player
+from .worker import Worker
+from .camera_group import CameraGroup
 
 
 class SettlerGame:
@@ -53,6 +53,7 @@ class SettlerGame:
         self.house = House((640, 1000), self.camera_group, base_path=self.base_path)
         self.house_gold_mine_list = []
         self.house_gold_mine_list.append(HouseGoldMine((1500, 900), self.camera_group, base_path=self.base_path))
+        self.house_gold_mine_list.append(HouseGoldMine((1800, 900), self.camera_group, base_path=self.base_path))
 
         self.camera_group.offset = (210, 785)
 
@@ -274,45 +275,3 @@ class SettlerGame:
         #     self.add_tree(self.panel_tree_small_new)
 
         self.screen.blit(panel_surf, (0, 0))
-
-# def main():
-# 	pygame.init()
-# 	screen = pygame.display.set_mode((1280, 720))
-# 	clock = pygame.time.Clock()
-# 	pygame.event.set_grab(True)
-#
-# 	# setup
-# 	camera_group = CameraGroup()
-# 	player = Player((640, 360), camera_group)
-# 	worker = Worker((640, 450), camera_group)
-#
-# 	tree_list = []
-# 	for i in range(20):
-# 		random_x = randint(1000, 2000)
-# 		random_y = randint(1000, 2000)
-# 		tree_list.append(Tree((random_x, random_y), camera_group))
-#
-# 	while True:
-# 		for event in pygame.event.get():
-# 			if event.type == pygame.QUIT:
-# 				pygame.quit()
-# 				sys.exit()
-# 			if event.type == pygame.KEYDOWN:
-# 				if event.key == pygame.K_ESCAPE:
-# 					pygame.quit()
-# 					sys.exit()
-#
-# 			if event.type == pygame.MOUSEWHEEL:
-# 				camera_group.zoom_scale += event.y * 0.03
-#
-# 		screen.fill('#71ddee')
-#
-# 		camera_group.update()
-# 		camera_group.custom_draw(player, worker)
-#
-# 		pygame.display.update()
-# 		clock.tick(60)
-#
-#
-# if __name__ == '__main__':
-# 	main()
