@@ -127,6 +127,115 @@ class SettlerGame:
             self.house.mouse_selected = True
             self.set_active_house = False
 
+    def contol_panel(self, mouse):
+        """  Панель управления """
+
+        color_black = (0, 0, 0)
+        w, display_height = pygame.display.get_surface().get_size()
+
+        # Создание панели
+        panel_surf = pygame.Surface((400, display_height))
+        pygame.draw.rect(panel_surf, color_black, pygame.Rect(0, 0, 400, display_height))
+
+        # Формирование текста на панели
+        selected_object = self.get_selected_objects()
+        stats = []
+        p_stats_y = 300
+
+        # Текст если выбран дом
+        if selected_object == 'house':
+            stats = [
+                ('Дом', ''),
+                ('Собрано деревьев в доме', self.house.done_tree_count),
+                ('Золото', self.house.done_gold_count)
+            ]
+
+            # Уменьшенные картинки объектов
+            self.panel_tree_small.rect.x = 100
+            self.panel_tree_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
+            panel_surf.blit(self.panel_tree_small.image, self.panel_tree_small.rect)
+
+            self.panel_house_gold_mine_small.rect.x = 200
+            self.panel_house_gold_mine_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
+            panel_surf.blit(self.panel_house_gold_mine_small.image, self.panel_house_gold_mine_small.rect)
+
+        # Текст если выбрана шахта
+        elif selected_object == 'house_gold_mine':
+            stats = [
+                ('Золотая шахта', ''),
+                ('Золото в шахте',
+                 self.house_gold_mine_list[self.camera_group.house_gold_mine_selected_index].gold_count)
+            ]
+
+        # Текст если выбран рабочий
+        elif selected_object == 'worker':
+            stats = [
+                ('Рабочий', ''),
+                ('test_worker', self.camera_group.test_worker)
+            ]
+
+        # Текст если выбран золотодобытчик
+        elif selected_object == 'worker_gold_miner':
+            stats = [
+                ('Шахтер золота', '')
+            ]
+
+        # Текст если выбрано дерево
+        elif selected_object == 'tree':
+            stats = [
+                ('Дерево', ''),
+                ('Деревьево номер', self.camera_group.tree_selected_index)
+            ]
+
+        # Текст если не выбран ни один объект - общая статистика
+        elif selected_object == 'common stat':
+            stats = [
+                ('Статистика', ''),
+                ('fps', self.clock.get_fps()),
+                ('test_worker_gold_miner', self.camera_group.test_worker_gold_miner),
+                ('player.rect', self.player.rect),
+                ('camera_group.offset', self.camera_group.offset),
+                ('camera_group.camera_rect', self.camera_group.camera_rect),
+                ('test_stat', self.camera_group.test_stat),
+                ('zoom_scale', self.camera_group.zoom_scale),
+                ('len(tree_list)', len(self.tree_list)),
+                ('test_ground_offset', self.camera_group.test_ground_offset),
+                ('test_tree', self.camera_group.test_tree),
+                ('pygame.mouse.get_pos()', pygame.mouse.get_pos()),
+                ('test_scaled_tree_rect', self.camera_group.test_scaled_tree_rect),
+                ('test_tree_selected_index', self.camera_group.test_tree_selected_index),
+                ('test_worker', self.camera_group.test_worker),
+                ('test_house', self.camera_group.test_house),
+                ('Собрано деревьев', self.camera_group.test_tree_done_count),
+                ('Собрано деревьев в доме', self.house.done_tree_count)
+            ]
+
+        # Отрисовка текста панели
+        for i, line in enumerate(stats):
+            surf_text = self.font.render(str(line[0]) + ': ' + str(line[1]), True, (255, 255, 255))
+            panel_surf.blit(surf_text, (10, p_stats_y + (i * 30)))
+
+        # Миникарта
+        scaled_surf = pygame.transform.scale(self.camera_group.internal_surf,
+                                             self.camera_group.internal_surface_size_vector * 0.1)
+        panel_surf.blit(scaled_surf, (0, 0))
+
+        # Создание новых объектов - удерживаем мышкой новый объект
+        if self.panel_tree_small_selected:
+            self.panel_tree_small_new.rect.x = mouse[0]
+            self.panel_tree_small_new.rect.y = mouse[1]
+            self.screen.blit(self.panel_tree_small_new.image, self.panel_tree_small_new.rect)
+
+        elif self.panel_house_gold_mine_small_selected:
+            self.panel_house_gold_mine_small_new.rect.x = mouse[0]
+            self.panel_house_gold_mine_small_new.rect.y = mouse[1]
+            self.screen.blit(self.panel_house_gold_mine_small_new.image, self.panel_house_gold_mine_small_new.rect)
+        # else:
+        #     # Оставляем объект
+        #     self.add_tree(self.panel_tree_small_new)
+
+        return panel_surf
+
     def run(self, events):
         if not self.running:
             return
@@ -179,99 +288,6 @@ class SettlerGame:
                                       self.house, self.house_gold_mine_list, self.worker_gold_miner,
                                       self.gold)
 
-        # Панель управления
-        w, display_height = pygame.display.get_surface().get_size()
-        BLACK = (0, 0, 0)
-        panel_surf = pygame.Surface((400, display_height))
-        pygame.draw.rect(panel_surf, BLACK, pygame.Rect(0, 0, 400, display_height))
-
-        p_selected_object = self.get_selected_objects()
-        stats = []
-        p_stats_y = 300
-
-        if p_selected_object == 'house':
-            stats = [
-                ('Дом', ''),
-                ('Собрано деревьев в доме', self.house.done_tree_count),
-                ('Золото', self.house.done_gold_count)
-            ]
-            # if self.panel_tree_small_selected:
-            #     stats.append(('Выбрано дерево', self.panel_tree_small_selected))
-            self.panel_tree_small.rect.x = 100
-            self.panel_tree_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
-            panel_surf.blit(self.panel_tree_small.image, self.panel_tree_small.rect)
-
-            self.panel_house_gold_mine_small.rect.x = 200
-            self.panel_house_gold_mine_small.rect.y = p_stats_y + ((len(stats) - 1) * 30) + 30
-            panel_surf.blit(self.panel_house_gold_mine_small.image, self.panel_house_gold_mine_small.rect)
-
-        elif p_selected_object == 'house_gold_mine':
-            stats = [
-                ('Золотая шахта', ''),
-                ('Золото в шахте', self.house_gold_mine_list[self.camera_group.house_gold_mine_selected_index].gold_count)
-            ]
-
-        elif p_selected_object == 'worker':
-            stats = [
-                ('Рабочий', ''),
-                ('test_worker', self.camera_group.test_worker)
-            ]
-
-        elif p_selected_object == 'worker_gold_miner':
-            stats = [
-                ('Шахтер золота', '')
-            ]
-
-        elif p_selected_object == 'tree':
-            stats = [
-                ('Дерево', ''),
-                ('Деревьево номер', self.camera_group.tree_selected_index)
-            ]
-        elif p_selected_object == 'common stat':
-            stats = [
-                ('Статистика', ''),
-                ('fps', self.clock.get_fps()),
-                ('test_worker_gold_miner', self.camera_group.test_worker_gold_miner),
-                ('player.rect', self.player.rect),
-                ('camera_group.offset', self.camera_group.offset),
-                ('camera_group.camera_rect', self.camera_group.camera_rect),
-                ('test_stat', self.camera_group.test_stat),
-                ('zoom_scale', self.camera_group.zoom_scale),
-                ('len(tree_list)', len(self.tree_list)),
-                ('test_ground_offset', self.camera_group.test_ground_offset),
-                ('test_tree', self.camera_group.test_tree),
-                ('pygame.mouse.get_pos()', pygame.mouse.get_pos()),
-                ('test_scaled_tree_rect', self.camera_group.test_scaled_tree_rect),
-                ('test_tree_selected_index', self.camera_group.test_tree_selected_index),
-                ('test_worker', self.camera_group.test_worker),
-                ('test_house', self.camera_group.test_house),
-                ('Собрано деревьев', self.camera_group.test_tree_done_count),
-                ('Собрано деревьев в доме', self.house.done_tree_count)
-            ]
-
-        # Панель управления
-        # Текст панели
-        for i, line in enumerate(stats):
-            surf_text = self.font.render(str(line[0]) + ': ' + str(line[1]), True, (255, 255, 255))
-            panel_surf.blit(surf_text, (10, p_stats_y + (i * 30)))
-
-        # Миникарта
-        scaled_surf = pygame.transform.scale(self.camera_group.internal_surf,
-                                             self.camera_group.internal_surface_size_vector * 0.1)
-        panel_surf.blit(scaled_surf, (0, 0))
-
-        # Удерживаем мышкой новый объект
-        if self.panel_tree_small_selected:
-            self.panel_tree_small_new.rect.x = mouse[0]
-            self.panel_tree_small_new.rect.y = mouse[1]
-            self.screen.blit(self.panel_tree_small_new.image, self.panel_tree_small_new.rect)
-
-        elif self.panel_house_gold_mine_small_selected:
-            self.panel_house_gold_mine_small_new.rect.x = mouse[0]
-            self.panel_house_gold_mine_small_new.rect.y = mouse[1]
-            self.screen.blit(self.panel_house_gold_mine_small_new.image, self.panel_house_gold_mine_small_new.rect)
-        # else:
-        #     # Оставляем объект
-        #     self.add_tree(self.panel_tree_small_new)
+        panel_surf = self.contol_panel(mouse)
 
         self.screen.blit(panel_surf, (0, 0))
