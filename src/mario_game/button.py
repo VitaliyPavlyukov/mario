@@ -15,14 +15,14 @@ class Button(pygame.sprite.Sprite):
     color_GREEN_2 = (0, 225, 0)
     color_BLUE = (0, 0, 225)
 
-    def __init__(self, text, width=75, height=25):
+    def __init__(self, text, width=75, height=25, alpha=128):
         super(Button, self).__init__()
         self.text = text
         self.width = width
         self.height = height
         self.backcolor = Button.color_WHITE
         self.surf = pygame.Surface((self.width, self.height))
-        self.surf.set_alpha(128)
+        self.surf.set_alpha(alpha)
         self.surf.fill(self.backcolor)
         self.rect = self.surf.get_rect()
         self.mouseClicked = False

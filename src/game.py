@@ -20,16 +20,14 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.mario_game = MarioGame(self.screen)
-        self.marioGame_running_flag = False
         self.settler_game = SettlerGame(self.screen, self.clock, base_path='game_settler')
-        self.settler_game_running_flag = False
 
         self.font = pygame.font.Font(None, 32)
 
-        self.button_mario_start = Button(text='Марио')
+        self.button_mario_start = Button(text='Марио', alpha=255)
         self.button_mario_start.set_init_pos(100, 650)
 
-        self.button_camera_start = Button(text='Поселенцы', width=130)
+        self.button_camera_start = Button(text='Поселенцы', width=130, alpha=255)
         self.button_camera_start.set_init_pos(100, 690)
 
         self.screen_color = (50, 50, 50)
@@ -40,13 +38,13 @@ class Game:
         pygame.display.set_caption("Игры")
 
     def games_stop(self):
-        self.marioGame_running_flag = False
-        self.settler_game_running_flag = False
+        self.mario_game.running = False
+        self.settler_game.running = False
 
     def is_games_running(self):
-        if self.marioGame_running_flag:
+        if self.mario_game.running:
             return True
-        if self.settler_game_running_flag:
+        if self.settler_game.running:
             return True
 
         return False
@@ -61,7 +59,6 @@ class Game:
 
         running = True
         while running:
-
             events = pygame.event.get()
 
             for event in events:
@@ -80,39 +77,30 @@ class Game:
                             self.screen = pygame.display.set_mode(self.window_size)
                             fullscreen = False
 
-                if not self.marioGame_running_flag and not self.settler_game.running:
+                if not self.is_games_running():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             running = False
 
             if self.mario_game.running:
                 self.mario_game.run(events)
-            else:
-                # Переключение один раз
-                if self.marioGame_running_flag:
-                    self.screen.fill(self.screen_color)
-                self.marioGame_running_flag = False
 
             if self.settler_game.running:
                 self.settler_game.run(events)
-            else:
-                # Переключение один раз
-                if self.settler_game_running_flag:
-                    self.screen.fill(self.screen_color)
-                self.settler_game_running_flag = False
 
             if self.button_mario_start.clicked():
                 self.mario_game.set_running(True)
-                self.marioGame_running_flag = True
+                self.mario_game.running = True
                 self.button_mario_start.set_not_clicked()
 
             if self.button_camera_start.clicked():
                 self.settler_game.set_running(True)
-                self.settler_game_running_flag = True
+                self.settler_game.running = True
                 self.button_camera_start.set_not_clicked()
 
             # Отрисовка без включенных игр
             if not self.is_games_running():
+                self.screen.fill(self.screen_color)
                 self.button_mario_start.draw(self.screen, events)
                 self.button_camera_start.draw(self.screen, events)
 
