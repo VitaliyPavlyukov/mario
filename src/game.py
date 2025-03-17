@@ -38,8 +38,8 @@ class Game:
         pygame.display.set_caption("Игры")
 
     def games_stop(self):
-        for key, value_game in self.games.items():
-            value_game.running = False
+        for key in self.games.keys():
+            self.games[key].running = False
 
     def is_games_running(self):
         for key, value_game in self.games.items():
