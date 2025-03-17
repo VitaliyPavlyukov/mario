@@ -10,10 +10,9 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 class Game:
     def __init__(self):
         self.init()
-        self.displayInfo = pygame.display.Info()  # You have to call this before pygame.display.set_mode()
+        self.displayInfo = pygame.display.Info()
         print(self.displayInfo.current_w, self.displayInfo.current_h)
-        #print('displayInfo', self.displayInfo)
-        #self.screen_width, screen_height = info.current_w, info.current_h
+
         self.window_size = (0, 0) #scaled 1707 960
         self.screen = pygame.display.set_mode(self.window_size, pygame.RESIZABLE | pygame.OPENGL)
 
@@ -25,11 +24,11 @@ class Game:
 
         self.font = pygame.font.Font(None, 32)
 
-        self.button_mario_start = Button(text='Марио', alpha=255)
-        self.button_mario_start.set_init_pos(100, 650)
+        self.button_mario_start = Button(text='Марио', width=130, alpha=255)
+        self.button_mario_start.set_init_pos(100, 650, 'center')
 
         self.button_camera_start = Button(text='Поселенцы', width=130, alpha=255)
-        self.button_camera_start.set_init_pos(100, 690)
+        self.button_camera_start.set_init_pos(100, 690,'center')
 
         self.screen_color = (50, 50, 50)
 
