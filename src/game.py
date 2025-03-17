@@ -42,7 +42,7 @@ class Game:
             self.games[key].running = False
 
     def is_games_running(self):
-        for key, value_game in self.games.items():
+        for _, value_game in self.games.items():
             if value_game.running:
                 return True
 
