@@ -19,8 +19,9 @@ class Game:
 
         self.clock = pygame.time.Clock()
 
-        self.mario_game = MarioGame(self.screen)
-        self.settler_game = SettlerGame(self.screen, self.clock, base_path='game_settler')
+        self.games = {'Mario': MarioGame(self.screen),
+                      'Settler': SettlerGame(self.screen, self.clock, base_path='game_settler')
+                      }
 
         self.font = pygame.font.Font(None, 32)
 
@@ -38,14 +39,13 @@ class Game:
         pygame.display.set_caption("Игры")
 
     def games_stop(self):
-        self.mario_game.running = False
-        self.settler_game.running = False
+        for key, value_game in self.games.items():
+            value_game.running = False
 
     def is_games_running(self):
-        if self.mario_game.running:
-            return True
-        if self.settler_game.running:
-            return True
+        for key, value_game in self.games.items():
+            if value_game.running:
+                return True
 
         return False
 
@@ -82,20 +82,18 @@ class Game:
                         if event.key == pygame.K_ESCAPE:
                             running = False
 
-            if self.mario_game.running:
-                self.mario_game.run(events)
-
-            if self.settler_game.running:
-                self.settler_game.run(events)
+            for key, value_game in self.games.items():
+                if value_game.running:
+                    value_game.run(events)
 
             if self.button_mario_start.clicked():
-                self.mario_game.set_running(True)
-                self.mario_game.running = True
+                self.games['Mario'].set_running(True)
+                self.games['Mario'].running = True
                 self.button_mario_start.set_not_clicked()
 
             if self.button_camera_start.clicked():
-                self.settler_game.set_running(True)
-                self.settler_game.running = True
+                self.games['Settler'].set_running(True)
+                self.games['Settler'].running = True
                 self.button_camera_start.set_not_clicked()
 
             # Отрисовка без включенных игр
