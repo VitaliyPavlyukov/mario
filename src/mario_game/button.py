@@ -15,14 +15,14 @@ class Button(pygame.sprite.Sprite):
     color_GREEN_2 = (0, 225, 0)
     color_BLUE = (0, 0, 225)
 
-    def __init__(self, text, width=75, height=25):
+    def __init__(self, text, width=75, height=25, alpha=128):
         super(Button, self).__init__()
         self.text = text
         self.width = width
         self.height = height
         self.backcolor = Button.color_WHITE
         self.surf = pygame.Surface((self.width, self.height))
-        self.surf.set_alpha(128)
+        self.surf.set_alpha(alpha)
         self.surf.fill(self.backcolor)
         self.rect = self.surf.get_rect()
         self.mouseClicked = False
@@ -32,6 +32,8 @@ class Button(pygame.sprite.Sprite):
         self.rect_text = self.surf_text.get_rect()
         self.begin_left = 0
         self.begin_top = 0
+        self.text_position = 'center'
+
         self.set_init_pos(0, 0)
 
     def set_backcolor(self, color):
@@ -40,13 +42,21 @@ class Button(pygame.sprite.Sprite):
         self.backcolor = color
         self.surf.fill(self.backcolor)
 
-    def set_init_pos(self, left, top):
+    def set_init_pos(self, left, top, text_position='center'):
         """ Установка первоначальной позиции """
 
+        self.text_position = text_position
         self.rect.left = left
         self.rect.top = top
-        self.rect_text.left = self.rect.left + ((self.surf.get_width() - self.surf_text.get_width()) // 2)
+
         self.rect_text.top = self.rect.top + ((self.surf.get_height() - self.surf_text.get_height()) // 2)
+
+        if self.text_position == 'left':
+            self.rect_text.left = self.rect.left + 5
+        elif self.text_position == 'center':
+            self.rect_text.left = self.rect.left + ((self.surf.get_width() - self.surf_text.get_width()) // 2)
+        else:
+            self.rect_text.left = self.rect.left + ((self.surf.get_width() - self.surf_text.get_width()) // 2)
 
     def set_text(self, text):
         """ Установка текста """

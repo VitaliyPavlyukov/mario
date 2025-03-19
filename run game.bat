@@ -1,3 +1,6 @@
+cd venv\Scripts
+call activate
+cd ..\..
 cd src
-c:\users\%username%\anaconda3\python.exe game.py
+python.exe game.py
 pause
